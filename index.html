@@ -1690,6 +1690,11 @@
   </div>
 
   <script>
+    // ==========================================
+    // ⚠️ 請在下方雙引號中，貼上您 Google Apps Script 的「部署網址」!
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCuvgop1Z9zmiEDbPn_Aty7gkO17fSXbsLs3XcXKeGirfRbucCMo86VKTG9Yb7rFt7AA/exec";
+    // ==========================================
+
     // --- 5分頁切換邏輯 ---
     function switchView(viewName) {
       const views = ['home', 'agenda', 'traffic', 'lodging', 'register'];
@@ -2129,14 +2134,34 @@
           .withFailureHandler(onRegistrationFailure)
           .register(payload);
       } else {
-        console.log("Submit Payload:", payload);
-        setTimeout(() => {
-          onRegistrationSuccess({
-            success: true,
-            uid: 'CONF' + Math.floor(Math.random() * 900000000 + 100000000),
-            participant: payload
-          });
-        }, 1500);
+        // 外部靜態網域下，使用 JSONP 跨域向 Google Apps Script 提交報名資料
+        if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.indexOf("script.google.com") === -1) {
+          alert("⚠️ 系統錯誤：尚未設定 Google Apps Script 部署網址，無法提交表單！");
+          restoreFormView();
+          return;
+        }
+
+        const requestUrl = GAS_WEB_APP_URL + "?callback=onExternalRegSuccess&action=register&payload=" + encodeURIComponent(JSON.stringify(payload));
+        
+        // 註冊全域 callback 接收回傳值
+        window.onExternalRegSuccess = function(response) {
+          onRegistrationSuccess(response);
+          // 移除 script 標籤與全域變數以保持乾淨
+          const oldScript = document.getElementById('externalRegScript');
+          if (oldScript) oldScript.remove();
+          delete window.onExternalRegSuccess;
+        };
+
+        const script = document.createElement('script');
+        script.id = 'externalRegScript';
+        script.src = requestUrl;
+        script.onerror = function() {
+          onRegistrationFailure(new Error("網路連線失敗，或無法與 Google 伺服器通訊。請確認您的「部署網址」是否填寫正確，且權限已設定為「所有人 (Anyone)」！"));
+          const oldScript = document.getElementById('externalRegScript');
+          if (oldScript) oldScript.remove();
+          delete window.onExternalRegSuccess;
+        };
+        document.body.appendChild(script);
       }
     }
 
