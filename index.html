@@ -1942,38 +1942,15 @@
       goToStep(1);
     }
     
-    function goToStep(step) {
+        function goToStep(step) {
       if(step === 2) {
         if (!validateStep1()) return;
       }
       if(step === 3) {
-        let arr1 = document.querySelector('input[name="day1Traffic"]:checked');
-        if(!arr1) {
-          alert("請選擇第一天抵達會場交通方式！");
-          return;
-        }
-        let arr2 = document.querySelector('input[name="day2Traffic"]:checked');
-        if(!arr2) {
-          alert("請選擇第二天抵達會場交通方式！");
-          return;
-        }
+        if (!validateStep2_actual()) return;
       }
       if(step === 4) {
-        let diet = document.querySelector('input[name="diet"]:checked');
-        if(!diet) {
-          alert("請選擇飲食習慣！");
-          return;
-        }
-        let meals = document.querySelector('input[name="meals"]:checked');
-        if(!meals) {
-          alert("請選擇用餐需求！");
-          return;
-        }
-        let stay = document.querySelector('input[name="stay"]:checked');
-        if(!stay) {
-          alert("請選擇住宿安排！");
-          return;
-        }
+        if (!validateStep3_actual()) return;
       }
       
       document.querySelectorAll('.form-step').forEach(el => el.style.display = 'none');
@@ -2185,122 +2162,135 @@
       return isValid;
     }
 
-    function validateStep2() {
-      let isValid = true;
-
-      const dietChecked = document.querySelector('input[name="diet"]:checked');
-      if (!dietChecked) {
-        showError('diet-error', true);
-        isValid = false;
-      } else {
-        showError('diet-error', false);
-      }
-
-      const mealsChecked = document.querySelectorAll('input[name="meals"]:checked');
-      if (mealsChecked.length === 0) {
-        showError('meals-error', true);
-        isValid = false;
-      } else {
-        showError('meals-error', false);
-      }
-
-      const d1TrafficChecked = document.querySelector('input[name="day1Traffic"]:checked');
-      if (!d1TrafficChecked) {
-        showError('day1Traffic-error', true);
-        isValid = false;
-      } else {
-        showError('day1Traffic-error', false);
-        if (d1TrafficChecked.value === '自行開車') {
-          const plate = document.getElementById('d1-car-plate').value.trim();
-          if (!plate) {
-            showError('d1-car-plate-error', true);
-            isValid = false;
-          } else {
-            showError('d1-car-plate-error', false);
-          }
-        }
-      }
-
-      const d1AfterChecked = document.querySelector('input[name="day1After"]:checked');
-      if (!d1AfterChecked) {
-        showError('day1After-error', true);
-        isValid = false;
-      } else {
-        showError('day1After-error', false);
-      }
-
-      const d2TrafficChecked = document.querySelector('input[name="day2Traffic"]:checked');
-      if (!d2TrafficChecked) {
-        showError('day2Traffic-error', true);
-        isValid = false;
-      } else {
-        showError('day2Traffic-error', false);
-        if (d2TrafficChecked.value === '自行開車') {
-          const plate = document.getElementById('d2-car-plate').value.trim();
-          if (!plate) {
-            showError('d2-car-plate-error', true);
-            isValid = false;
-          } else {
-            showError('d2-car-plate-error', false);
-          }
-        }
-      }
-
-      const stayChecked = document.querySelector('input[name="stay"]:checked');
-      if (!stayChecked) {
-        showError('stay-error', true);
-        isValid = false;
-      } else {
-        showError('stay-error', false);
-        if (stayChecked.value === '住宿') {
-          const invoice = document.getElementById('invoice').value.trim();
-          if (!invoice) {
-            showError('invoice-error', true);
-            isValid = false;
-          } else {
-            showError('invoice-error', false);
-          }
-
-          const roomTypeChecked = document.querySelector('input[name="roomType"]:checked');
-          if (!roomTypeChecked) {
-            showError('roomType-error', true);
-            isValid = false;
-          } else {
-            showError('roomType-error', false);
-            if (roomTypeChecked.id === 'room-double') {
-              const rSchool = document.getElementById('roommate-school').value.trim();
-              if (!rSchool) {
-                showError('roommate-school-error', true);
-                isValid = false;
-              } else {
-                showError('roommate-school-error', false);
-              }
-
-              const rName = document.getElementById('roommate-name').value.trim();
-              if (!rName) {
-                showError('roommate-name-error', true);
-                isValid = false;
-              } else {
-                showError('roommate-name-error', false);
-              }
-            }
-          }
-        }
-      }
-
-      const departureChecked = document.querySelector('input[name="departure"]:checked');
-      if (!departureChecked) {
-        showError('departure-error', true);
-        isValid = false;
-      } else {
-        showError('departure-error', false);
-      }
-
-      return isValid;
-    }
-
-    // --- 送出表單資料 ---
-    
+        function validateStep2_actual() {
+      let isValid = true;
+      const d1TrafficChecked = document.querySelector('input[name="day1Traffic"]:checked');
+      if (!d1TrafficChecked) {
+        showError('day1Traffic-error', true);
+        isValid = false;
+      } else {
+        showError('day1Traffic-error', false);
+        if (d1TrafficChecked.value === '自行開車') {
+          const plate = document.getElementById('d1-car-plate').value.trim();
+          if (!plate) {
+            showError('d1-car-plate-error', true);
+            isValid = false;
+          } else {
+            showError('d1-car-plate-error', false);
+          }
+        }
+      }
+
+      const d2TrafficChecked = document.querySelector('input[name="day2Traffic"]:checked');
+      if (!d2TrafficChecked) {
+        showError('day2Traffic-error', true);
+        isValid = false;
+      } else {
+        showError('day2Traffic-error', false);
+        if (d2TrafficChecked.value === '自行開車') {
+          const plate = document.getElementById('d2-car-plate').value.trim();
+          if (!plate) {
+            showError('d2-car-plate-error', true);
+            isValid = false;
+          } else {
+            showError('d2-car-plate-error', false);
+          }
+        }
+      }
+      return isValid;
+    }
+
+    function validateStep3_actual() {
+      let isValid = true;
+      const dietChecked = document.querySelector('input[name="diet"]:checked');
+      if (!dietChecked) {
+        showError('diet-error', true);
+        isValid = false;
+      } else {
+        showError('diet-error', false);
+      }
+
+      const mealsChecked = document.querySelectorAll('input[name="meals"]:checked');
+      if (mealsChecked.length === 0) {
+        showError('meals-error', true);
+        isValid = false;
+      } else {
+        showError('meals-error', false);
+      }
+
+      const stayChecked = document.querySelector('input[name="stay"]:checked');
+      if (!stayChecked) {
+        showError('stay-error', true);
+        isValid = false;
+      } else {
+        showError('stay-error', false);
+        if (stayChecked.value === '住宿') {
+          const invoice = document.getElementById('invoice').value.trim();
+          if (!invoice) {
+            showError('invoice-error', true);
+            isValid = false;
+          } else {
+            showError('invoice-error', false);
+          }
+
+          const roomTypeChecked = document.querySelector('input[name="roomType"]:checked');
+          if (!roomTypeChecked) {
+            showError('roomType-error', true);
+            isValid = false;
+          } else {
+            showError('roomType-error', false);
+            if (roomTypeChecked.id === 'room-double') {
+              const rSchool = document.getElementById('roommate-school').value.trim();
+              if (!rSchool) {
+                showError('roommate-school-error', true);
+                isValid = false;
+              } else {
+                showError('roommate-school-error', false);
+              }
+
+              const rName = document.getElementById('roommate-name').value.trim();
+              if (!rName) {
+                showError('roommate-name-error', true);
+                isValid = false;
+              } else {
+                showError('roommate-name-error', false);
+              }
+            }
+          }
+        }
+      }
+      return isValid;
+    }
+
+    function validateStep4_actual() {
+      let isValid = true;
+      const d1AfterChecked = document.querySelector('input[name="day1After"]:checked');
+      if (!d1AfterChecked) {
+        showError('day1After-error', true);
+        isValid = false;
+      } else {
+        showError('day1After-error', false);
+      }
+
+      const departureChecked = document.querySelector('input[name="departure"]:checked');
+      if (!departureChecked) {
+        showError('departure-error', true);
+        isValid = false;
+      } else {
+        showError('departure-error', false);
+      }
+      return isValid;
+    }
+
+    function validateStep2() {
+      const v2 = validateStep2_actual();
+      const v3 = validateStep3_actual();
+      const v4 = validateStep4_actual();
+      return v2 && v3 && v4;
+    }
+
+
+    // --- 送出表單資料 ---
     function showPreview() {
       if (!validateStep2()) {
         return;
