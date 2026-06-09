@@ -21,7 +21,7 @@
       --text: #000000;          /* 純黑提供最清晰對比 */          /* 深 Slate 碳黑 */
       --text-light: #1E293B;    /* 深灰提高對比度 */
       --text-muted: #576574;    /* 提高輔助說明文字對比 */
-      --border-color: #E2E8F0;
+      --border-color: #CBD5E1;
     }
 
     * {
@@ -471,8 +471,17 @@
       }
     }
 
+    /* 區塊淡淡的色塊 */
+    .form-section-block {
+      background-color: #F8FAFC; /* 極淡的灰藍底色 */
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 28px 24px;
+      margin-bottom: 24px;
+    }
+
     .form-group {
-      margin-bottom: 22px;
+      margin-bottom: 24px;
       position: relative;
     }
 
@@ -491,12 +500,15 @@
       }
     }
 
-    .form-group label {
+    .form-group > label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--text);
+      margin-bottom: 14px;
+      font-weight: 800;
+      font-size: 17px;
+      color: var(--primary); /* 深藍色標題 */
+      border-bottom: 2px solid var(--border-color); /* 底部一條乾淨的線條 */
+      padding-bottom: 8px;
+      line-height: 1.5;
     }
 
     .form-group label span.required {
@@ -511,13 +523,14 @@
     .form-group select {
       width: 100%;
       padding: 12px 16px;
-      border: 1px solid var(--border-color);
+      border: 1px solid #CBD5E1; /* 細緻的框線 */
       border-radius: 8px;
-      font-size: 16px;
-      color: var(--text);
+      font-size: 16.5px;
+      color: #000000;
       transition: all 0.2s ease;
       font-family: inherit;
-      background-color: white;
+      background-color: #FFFFFF;
+      font-weight: 500;
     }
 
     .form-group input:focus,
@@ -529,32 +542,37 @@
 
     .form-group input.error-border {
       border-color: var(--error);
+      border-width: 1.5px;
     }
 
     .error-text {
       color: var(--error);
-      font-size: 12px;
-      margin-top: 4px;
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-top: 5px;
       display: none;
     }
 
     .helper-text {
-      color: var(--text-light);
+      color: #576574;
       font-size: 13.5px;
       margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
+    
     /* 單選與多選按鈕卡片 */
     .choice-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 6px;
+      gap: 24px;
+      margin-top: 10px;
+      margin-bottom: 5px;
     }
 
     .choice-card {
-      flex: 1;
-      min-width: 120px;
       position: relative;
     }
 
@@ -562,53 +580,75 @@
     .choice-card input[type="checkbox"] {
       position: absolute;
       opacity: 0;
-      width: 0;
-      height: 0;
+      width: 1px;
+      height: 1px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      padding: 0;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      z-index: -1;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
     }
 
     .choice-label {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 12px 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+      justify-content: flex-start;
       cursor: pointer;
-      font-size: 16px;
-      font-weight: 700;
-      text-align: center;
-      background: white;
+      font-size: 16.5px;
+      font-weight: 500;
+      color: #1E293B;
       transition: all 0.2s ease;
       user-select: none;
-      height: 100%;
     }
 
-    .choice-card input:checked + .choice-label {
+    .choice-label::before {
+      content: "";
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #CBD5E1;
+      border-radius: 50%;
+      margin-right: 8px;
+      background-color: white;
+      transition: all 0.2s ease;
+      vertical-align: middle;
+    }
+
+    
+    .choice-card input[type="checkbox"] + .choice-label::before {
+      border-radius: 4px;
+    }
+    .choice-card input:checked + .choice-label::before {
       border-color: var(--primary);
-      background-color: var(--primary-light);
-      color: var(--primary);
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(15, 76, 129, 0.08);
+      background-color: var(--primary);
+      box-shadow: inset 0 0 0 4px white;
     }
 
     .choice-card input:disabled + .choice-label {
-      background: #F1F5F9;
-      border-color: #E2E8F0;
-      color: var(--text-muted);
-      cursor: not-allowed;
+      color: #94A3B8;
+      cursor: default;
+    }
+
+    .choice-card input:disabled + .choice-label::before {
+      background-color: #F1F5F9;
+      border-color: #CBD5E1;
     }
 
     .vertical-choice-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 6px;
+      gap: 14px;
     }
-
     .vertical-choice-list .choice-label {
-      justify-content: flex-start;
-      padding: 12px 16px;
-      text-align: left;
+      font-size: 16px;
+      color: #334155;
     }
 
     /* 展開子面板 */
@@ -1143,196 +1183,194 @@
           <h3 style="font-size: 15px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">大會協議房型價格</h3>
           
           <div class="rooms-grid">
+            
             <div class="room-card">
-              <div>
-                <div class="room-name">單人房 (山景客房，一大床)</div>
-                <div class="room-desc">山景精緻一大床，適合大會代表公務差旅獨立入住</div>
-              </div>
-              <div>
-                <div class="room-price">$3,500 <span style="font-size:13px; font-weight:normal; color:var(--text-light);">/ 間 (每晚)</span></div>
-                <div class="room-desc">※ 價格已包含 1 客大會早餐</div>
-              </div>
+              <div class="room-name">單人房 (山景客房)</div>
+              <div class="room-price">$3,500<span>/晚 (含1早)</span></div>
+              <ul class="room-features" style="list-style: none; padding: 0; color: var(--text-light); font-size: 14px; line-height: 1.8;">
+                <li>✓ 一大床</li>
+                <li>✓ 免費 Wi-Fi</li>
+              </ul>
             </div>
-
             <div class="room-card">
-              <div>
-                <div class="room-name">雙人房 (雅致家庭房，兩中床)</div>
-                <div class="room-desc">雅致雙床房型，可供同校或兩位大會代表合住</div>
-              </div>
-              <div>
-                <div class="room-price">$4,000 <span style="font-size:13px; font-weight:normal; color:var(--text-light);">/ 間 (每晚)</span></div>
-                <div class="room-desc">※ 價格已包含 2 客大會早餐</div>
-              </div>
+              <div class="room-name">雙人房 (雅致家庭房)</div>
+              <div class="room-price">$4,000<span>/晚 (含2早)</span></div>
+              <ul class="room-features" style="list-style: none; padding: 0; color: var(--text-light); font-size: 14px; line-height: 1.8;">
+                <li>✓ 兩中床</li>
+                <li>✓ 免費 Wi-Fi</li>
+              </ul>
             </div>
-          </div>
-
-          <div style="text-align: center; margin-top: 10px;">
-            <a href="https://www.edaroyal.com.tw/room/" target="_blank" class="btn btn-secondary" style="display: inline-block; max-width: 320px; text-decoration: none; padding: 14px 25px; line-height: 1.2; font-weight: bold; border-radius: 6px;">
-              🏨 點此前往皇家酒店官網瀏覽房型
-            </a>
           </div>
         </div>
       </div>
     </div>
 
-
-    <!-- ==================== VIEW 5: 線上報名 ==================== -->
+    <!-- ==================== VIEW 5: 報名表單 ==================== -->
     <div id="register-view" class="view-section">
       <div class="content-container">
-        <!-- 專屬報名表卡片 -->
         <div class="form-container-card">
-          <div class="box-title" style="margin-bottom: 30px;">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-            大會出席線上報名表
+          <div class="box-title" style="margin-bottom: 25px;">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            出席報名表
           </div>
+          <p style="color: var(--text-light); margin-bottom: 30px; font-size: 15px; line-height: 1.6;">
+            請填寫個人資料、交通、住宿資訊，以便辦理報到、旅遊平安保險及交通食宿等安排。
+          </p>
 
-          <!-- 步驟進度條 -->
+          <!-- 步驟指示器 -->
+                    <!-- 步驟指示器 -->
           <div class="steps-indicator">
-            <div class="step-progress-bar" id="progressBar"></div>
-            <div class="step-item active" id="stepIndicator1">
+            <div class="step-progress-bar"></div>
+            <div class="step-item active" id="indicator-1">
               <div class="step-number">1</div>
-              <div class="step-label">與會者基本資料</div>
+              <div class="step-label">基本資料</div>
             </div>
-            <div class="step-item" id="stepIndicator2">
+            <div class="step-item" id="indicator-2">
               <div class="step-number">2</div>
               <div class="step-label">交通食宿與參訪</div>
             </div>
           </div>
 
-          <form id="attendanceForm" novalidate>
-            
+          <form id="registrationForm">
             <!-- STEP 1: 基本資料 -->
             <div class="form-step active" id="step1">
-              <div class="section-title">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                與會代表基本資料
-              </div>
-
-              <!-- 第一列：姓名、性別 -->
-              <div class="form-row-half">
-                <div class="form-group">
-                  <label for="name">姓名<span class="required">*</span></label>
-                  <input type="text" id="name" name="name" required placeholder="請輸入姓名">
-                  <div class="error-text" id="name-error">請填寫姓名</div>
-                </div>
-                
-                <div class="form-group">
-                  <label>生理性別<span class="required">*</span></label>
-                  <div class="choice-group">
-                    <div class="choice-card">
-                      <input type="radio" id="gender-male" name="gender" value="男" required>
-                      <label class="choice-label" for="gender-male">男</label>
-                    </div>
-                    <div class="choice-card">
-                      <input type="radio" id="gender-female" name="gender" value="女" required>
-                      <label class="choice-label" for="gender-female">女</label>
-                    </div>
+<!-- 區塊 1：與會者身分基本資料 -->
+              <div class="form-section-block">
+                <!-- 第一列：姓名、性別 -->
+                <div class="form-row-half">
+                  <div class="form-group">
+                    <label for="name">姓名<span class="required">*</span></label>
+                    <input type="text" id="name" name="name" required placeholder="請輸入姓名">
+                    <div class="error-text" id="name-error">請填寫姓名</div>
                   </div>
-                  <div class="error-text" id="gender-error">請選擇生理性別</div>
-                </div>
-              </div>
-
-              <!-- 第二列：身分證字號、出生年月日 -->
-              <div class="form-row-half">
-                <div class="form-group">
-                  <label for="idCard">身分證字號<span class="required">*</span></label>
-                  <input type="text" id="idCard" name="idCard" required placeholder="身分證字號 (保險加保用)" style="text-transform: uppercase;">
-                  <div class="error-text" id="idCard-error">請填寫正確格式的身分證字號</div>
-                  <div class="helper-text">英文請用大寫</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="birthDate">出生年月日<span class="required">*</span></label>
-                  <input type="date" id="birthDate" name="birthDate" required>
-                  <div class="error-text" id="birthDate-error">請選擇出生年月日</div>
-                  <div class="helper-text">西元年，保險申報登記用</div>
-                </div>
-              </div>
-
-              <!-- 第三列：學校機關名稱、服務單位 -->
-              <div class="form-row-half">
-                <div class="form-group">
-                  <label for="school">學校機關名稱<span class="required">*</span></label>
-                  <input type="text" id="school" name="school" required placeholder="請輸入學校機關全名">
-                  <div class="error-text" id="school-error">請填寫學校機關全名</div>
-                  <div class="helper-text">請填寫全名，範例：義守大學(O) 義大(X)</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="unit">服務單位</label>
-                  <input type="text" id="unit" name="unit" placeholder="例如：教務處招生組">
-                  <div class="helper-text">格式範例：單位名稱+組別</div>
-                </div>
-              </div>
-
-              <!-- 第四列：職稱、電子郵件 -->
-              <div class="form-row-half">
-                <div class="form-group">
-                  <label for="title">職稱<span class="required">*</span></label>
-                  <input type="text" id="title" name="title" required placeholder="例如：教務長、組員">
-                  <div class="error-text" id="title-error">請填寫職稱</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="email">電子郵件 (Email)<span class="required">*</span></label>
-                  <input type="email" id="email" name="email" required placeholder="大會將寄送憑證至此信箱">
-                  <div class="error-text" id="email-error">請填寫正確格式的電子郵件</div>
-                </div>
-              </div>
-
-              <!-- 第五列：行動電話、辦公室電話 -->
-              <div class="form-row-half">
-                <div class="form-group">
-                  <label for="phone">行動電話<span class="required">*</span></label>
-                  <input type="tel" id="phone" name="phone" required placeholder="格式：09XX-XXXXXX">
-                  <div class="error-text" id="phone-error">請填寫行動電話</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="officePhone">辦公室電話<span class="required">*</span></label>
-                  <input type="tel" id="officePhone" name="officePhone" required placeholder="格式：07-6577711#2031">
-                  <div class="error-text" id="officePhone-error">請填寫辦公室電話</div>
-                </div>
-              </div>
-
-              <!-- 第六列：是否登錄公務人員時數 -->
-              <div class="form-row-half">
-                <div class="form-group">
-                  <label>是否登錄公務人員時數<span class="required">*</span></label>
-                  <div class="choice-group">
-                    <div class="choice-card">
-                      <input type="radio" id="hours-yes" name="publicServiceHours" value="是" required>
-                      <label class="choice-label" for="hours-yes">是</label>
+                  
+                  <div class="form-group">
+                    <label>生理性別<span class="required">*</span></label>
+                    <div class="choice-group">
+                      <div class="choice-card">
+                        <input type="radio" id="gender-male" name="gender" value="男" required>
+                        <label class="choice-label" for="gender-male">男</label>
+                      </div>
+                      <div class="choice-card">
+                        <input type="radio" id="gender-female" name="gender" value="女" required>
+                        <label class="choice-label" for="gender-female">女</label>
+                      </div>
                     </div>
-                    <div class="choice-card">
-                      <input type="radio" id="hours-no" name="publicServiceHours" value="否" required>
-                      <label class="choice-label" for="hours-no">否</label>
-                    </div>
+                    <div class="error-text" id="gender-error">請選擇生理性別</div>
                   </div>
-                  <div class="error-text" id="publicServiceHours-error">請選擇此項調查</div>
                 </div>
-                <div class="form-group">
-                  <!-- 保持排版對齊的空白區塊 -->
+
+                <!-- 第二列：身分證字號、出生年月日 -->
+                <div class="form-row-half" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label for="idCard">身分證字號<span class="required">*</span></label>
+                    <input type="text" id="idCard" name="idCard" required placeholder="身分證字號 (保險加保用)" style="text-transform: uppercase;">
+                    <div class="error-text" id="idCard-error">請填寫正確格式的身分證字號</div>
+                    <div class="helper-text">英文請用大寫</div>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label for="birthDate">出生年月日<span class="required">*</span></label>
+                    <input type="date" id="birthDate" name="birthDate" required>
+                    <div class="error-text" id="birthDate-error">請選擇出生年月日</div>
+                    <div class="helper-text">西元年，保險申報登記用</div>
+                  </div>
                 </div>
               </div>
 
-              <!-- 第七列：學校地址 (單欄全寬) -->
-              <div class="form-group">
-                <label for="address">學校地址</label>
-                <input type="text" id="address" name="address" placeholder="請輸入學校完整寄送地址">
-                <div class="helper-text">請在地址前面加上 <strong>3+3 郵遞區號</strong>，日後大會紀錄將郵寄至此。</div>
-              </div>
+              <!-- 區塊 2：服務單位與職稱 -->
+              <div class="form-section-block">
+                <!-- 第三列：學校機關名稱、服務單位 -->
+                <div class="form-row-half">
+                  <div class="form-group">
+                    <label for="school">學校機關名稱<span class="required">*</span></label>
+                    <input type="text" id="school" name="school" required placeholder="請輸入學校機關全名">
+                    <div class="error-text" id="school-error">請填寫學校機關全名</div>
+                    <div class="helper-text">請填寫全名，範例：義守大學(O) 義大(X)</div>
+                  </div>
 
-              <!-- 第八列：緊急聯絡人姓名、緊急聯絡人電話 -->
-              <div class="form-row-half">
-                <div class="form-group">
-                  <label for="emergencyContact">緊急聯絡人姓名</label>
-                  <input type="text" id="emergencyContact" name="emergencyContact" placeholder="緊急聯絡人姓名">
+                  <div class="form-group">
+                    <label for="unit">服務單位</label>
+                    <input type="text" id="unit" name="unit" placeholder="例如：教務處招生組">
+                    <div class="helper-text">格式範例：單位名稱+組別</div>
+                  </div>
                 </div>
 
+                <!-- 第四列：職稱、電子郵件 -->
+                <div class="form-row-half" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label for="title">職稱<span class="required">*</span></label>
+                    <input type="text" id="title" name="title" required placeholder="例如：教務長、組員">
+                    <div class="error-text" id="title-error">請填寫職稱</div>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label for="email">電子郵件 (Email)<span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="大會將寄送憑證至此信箱">
+                    <div class="error-text" id="email-error">請填寫正確格式的電子郵件</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 區塊 3：聯絡電話與時數登錄 -->
+              <div class="form-section-block">
+                <!-- 第五列：行動電話、辦公室電話 -->
+                <div class="form-row-half">
+                  <div class="form-group">
+                    <label for="phone">行動電話<span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone" required placeholder="格式：09XX-XXXXXX">
+                    <div class="error-text" id="phone-error">請填寫行動電話</div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="officePhone">辦公室電話<span class="required">*</span></label>
+                    <input type="tel" id="officePhone" name="officePhone" required placeholder="格式：07-6577711#2031">
+                    <div class="error-text" id="officePhone-error">請填寫辦公室電話</div>
+                  </div>
+                </div>
+
+                <!-- 第六列：是否登錄公務人員時數 -->
+                <div class="form-row-half" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label>是否登錄公務人員時數<span class="required">*</span></label>
+                    <div class="choice-group">
+                      <div class="choice-card">
+                        <input type="radio" id="hours-yes" name="publicServiceHours" value="是" required>
+                        <label class="choice-label" for="hours-yes">是</label>
+                      </div>
+                      <div class="choice-card">
+                        <input type="radio" id="hours-no" name="publicServiceHours" value="否" required>
+                        <label class="choice-label" for="hours-no">否</label>
+                      </div>
+                    </div>
+                    <div class="error-text" id="publicServiceHours-error">請選擇此項調查</div>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <!-- 保持排版對齊的空白區塊 -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- 區塊 4：寄送地址與緊急聯絡 -->
+              <div class="form-section-block" style="margin-bottom: 0;">
+                <!-- 第七列：學校地址 (單欄全寬) -->
                 <div class="form-group">
-                  <label for="emergencyPhone">緊急聯絡人電話</label>
-                  <input type="tel" id="emergencyPhone" name="emergencyPhone" placeholder="格式：09XXX-XXXXXX">
+                  <label for="address">學校地址</label>
+                  <input type="text" id="address" name="address" placeholder="請輸入學校完整寄送地址">
+                  <div class="helper-text">請在地址前面加上 <strong>3+3 郵遞區號</strong>，日後大會紀錄將郵寄至此。</div>
+                </div>
+
+                <!-- 第八列：緊急聯絡人姓名、緊急聯絡人電話 -->
+                <div class="form-row-half" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label for="emergencyContact">緊急聯絡人姓名</label>
+                    <input type="text" id="emergencyContact" name="emergencyContact" placeholder="緊急聯絡人姓名">
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label for="emergencyPhone">緊急聯絡人電話</label>
+                    <input type="tel" id="emergencyPhone" name="emergencyPhone" placeholder="格式：09XXX-XXXXXX">
+                  </div>
                 </div>
               </div>
 
@@ -1348,6 +1386,8 @@
                 <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v-2H2v2zm0 4h2v-2H2v2zm0-8h2v-2H2v2zm4 8h16v-2H6v2zm0-4h16v-2H6v2zm0-8v2h16V9H6zm-4 0h2V7H2v2z"/></svg>
                 出席調查 (交通、食宿、參訪)
               </div>
+<div class="form-section-block">
+
 
               <!-- 飲食習慣 -->
               <div class="form-group">
@@ -1636,14 +1676,18 @@
                 <div class="error-text" id="departure-error">請選擇此項行程調查</div>
               </div>
 
-              <div class="btn-group">
+              
+</div>
+<div class="btn-group">
                 <button type="button" class="btn btn-secondary" onclick="goToPrevStep()">⬅ 上一步</button>
                 <button type="button" class="btn btn-primary" onclick="submitRegistrationForm()">確認送出報名資料 ➔</button>
               </div>
             </div>
-
           </form>
         </div>
+      </div>
+    </div>
+
 
         <!-- 提交中狀態區塊 -->
         <div class="loader-container" id="loadingState">
