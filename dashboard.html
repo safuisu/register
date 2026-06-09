@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大會即時報到動態看版</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+    
+    :root {
+      --bg-color: #0f172a; /* 深藍色背景 */
+      --panel-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --accent: #38bdf8;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0; padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Noto Sans TC', sans-serif;
+      overflow: hidden; /* 適合大螢幕展示，不出現捲軸 */
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* 頂部標題與 Live 標籤 */
+    .header {
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(180deg, rgba(15,23,42,1) 0%, rgba(15,23,42,0) 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      z-index: 10;
+    }
+    
+    .header-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .live-indicator {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: bold; color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+      padding: 8px 16px; border-radius: 30px;
+    }
+    .dot {
+      width: 12px; height: 12px;
+      background-color: var(--success);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* 總數據儀表板 */
+    .stats-container {
+      display: flex;
+      gap: 20px;
+      padding: 0 40px;
+      margin-top: 20px;
+    }
+    .stat-card {
+      flex: 1;
+      background: var(--panel-bg);
+      padding: 25px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat-title { font-size: 18px; color: var(--text-sub); margin-bottom: 10px; font-weight: 700; }
+    .stat-value { font-size: 64px; font-weight: 900; color: var(--text-main); line-height: 1; }
+    .stat-value.highlight { color: var(--accent); }
+
+    /* 最新報到名單區塊 */
+    .list-section {
+      flex: 1;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .list-title {
+      font-size: 24px; font-weight: 700; color: white; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    
+    /* 報到卡片網格 */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+      align-content: start;
+    }
+
+    .person-card {
+      background: rgba(30, 41, 59, 0.7);
+      border-left: 6px solid var(--success);
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    /* 前三名剛報到的人，加上亮光特效 */
+    .person-card.newly-arrived {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: #34d399;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .person-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 14px; color: var(--text-sub);
+    }
+    .person-time {
+      font-family: monospace; font-size: 14px; color: var(--success);
+      background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px;
+    }
+    
+    .person-unit { font-size: 16px; color: #cbd5e1; font-weight: 500;}
+    .person-name { font-size: 28px; font-weight: 900; color: white; letter-spacing: 1px;}
+    .person-title { font-size: 16px; color: var(--accent); }
+
+    /* 動畫寫法 */
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-title">大會報到即時戰情中心</div>
+    <div class="live-indicator">
+      <div class="dot"></div> 即時連線中
+    </div>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-title">應到總人數</div>
+      <div class="stat-value" id="valTotal">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">已報到人數</div>
+      <div class="stat-value highlight" id="valChecked">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">累積報到率</div>
+      <div class="stat-value" id="valRate">--%</div>
+    </div>
+  </div>
+
+  <div class="list-section">
+    <div class="list-title">⚡ 最新報到貴賓</div>
+    <div class="grid-container" id="cardsGrid">
+      <!-- 這裡會由 JS 動態生成卡片 -->
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // ⚠️ 請在下方雙引號中，貼上您 Google Apps Script 的「部署網址」!
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTi3rYPdZcaFUl965cTSREY416NqXiRONbmxkp2W9CNtTim7EW8qrwL0KLH2phcQ6h/exec";
+    // ==========================================
+    
+    // 輪詢間隔 (5000 毫秒 = 5 秒)
+    const POLL_INTERVAL = 5000;
+
+    // 紀錄上一次最新報到的陣列字串，用來判斷有沒有新人報到
+    let lastLatestHash = "";
+
+    function fetchCheckinData() {
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.indexOf("script.google.com") === -1) {
+          console.warn("尚未設定正確的 GAS_WEB_APP_URL");
+          return;
+      }
+
+      // 加上時間戳記防止瀏覽器快取 (非常重要，否則數字不會動)
+      let requestUrl = GAS_WEB_APP_URL + "?action=getLatest&t=" + new Date().getTime();
+
+      fetch(requestUrl, { method: "GET", mode: "cors" })
+        .then(response => response.json())
+        .then(data => {
+            updateDashboard(data);
+        })
+        .catch(error => {
+            console.error("連線錯誤:", error);
+        });
+    }
+
+    function updateDashboard(data) {
+        if(data.error) { console.error(data.error); return; }
+
+        // 更新大數字
+        document.getElementById('valTotal').innerText = data.total || 0;
+        document.getElementById('valChecked').innerText = data.checkedInCount || 0;
+        
+        let rate = 0;
+        if(data.total > 0) rate = Math.round((data.checkedInCount / data.total) * 100);
+        document.getElementById('valRate').innerText = rate + "%";
+
+        // 更新報到卡片
+        if (!data.latest || data.latest.length === 0) return;
+
+        // 產生一個資料指紋用來發現是否有更新
+        // (若名字+時間都一樣，代表沒人新報到，為避免動畫一直重播，就不刷新 DOM)
+        let newHash = JSON.stringify(data.latest);
+        if (newHash === lastLatestHash) return; 
+        lastLatestHash = newHash;
+
+        let grid = document.getElementById('cardsGrid');
+        grid.innerHTML = ""; // 清空
+
+        // 逐一建立卡片
+        data.latest.forEach((person, index) => {
+            let card = document.createElement('div');
+            
+            // 給前 3 名加上呼吸燈亮光特效
+            if(index < 3) {  
+               card.className = "person-card newly-arrived"; 
+            } else {
+               card.className = "person-card"; 
+            }
+            
+            // 錯開進場動畫的時間
+            card.style.animationDelay = (index * 0.05) + "s";
+
+            card.innerHTML = `
+                <div class="person-header">
+                    <div class="person-unit">${person.unit || '無單位'}</div>
+                    <div class="person-time">⏱ ${person.timeStr || '--:--'}</div>
+                </div>
+                <div style="display:flex; align-items:baseline; gap:12px; margin-top:5px;">
+                  <div class="person-name">${person.name || '無姓名'}</div>
+                  <div class="person-title">${person.title || ''}</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // 初次載入就立刻抓一次資料
+    fetchCheckinData();
+
+    // 啟動每 5 秒自動跟 Google 拿資料的定時器
+    setInterval(fetchCheckinData, POLL_INTERVAL);
+
+  </script>
+</body>
+</html>
