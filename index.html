@@ -774,20 +774,10 @@
       width: 100px;
     }
 
-    .barcode-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-top: 25px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    @media (max-width: 500px) {
-      .barcode-section {
-        grid-template-columns: 1fr;
-      }
+        .barcode-section {
+      display: flex;
+      justify-content: center;
+      margin-top: 25px;
     }
 
     .barcode-card {
@@ -1876,14 +1866,11 @@
               <h4>手機相機專用憑證 (QR Code)</h4>
               <img id="qrImage" src="" alt="QR Code">
             </div>
-            <div class="barcode-card">
-              <h4>傳統掃描槍專用憑證 (Code128)</h4>
-              <img id="barcodeImage" src="" alt="Barcode">
-            </div>
+            
           </div>
 
           <p style="font-size: 13px; color: var(--text-muted); margin-top: 25px; line-height: 1.4; text-align: center;">
-            研討會當天請直接以手機出示上述條碼，現場工作人員會使用相機或條碼掃描槍為您完成快速報到。
+            研討會當天請直接以手機出示上述條碼，現場工作人員會為您完成快速報到。
           </p>
         </div>
       </div>
@@ -1894,7 +1881,7 @@
   <script>
     // ==========================================
     // ⚠️ 請在下方雙引號中，貼上您 Google Apps Script 的「部署網址」!
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTi3rYPdZcaFUl965cTSREY416NqXiRONbmxkp2W9CNtTim7EW8qrwL0KLH2phcQ6h/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywpKJ91JW-HCjQ_cwL-HaoqdE08h_9JuXXqR-rxJsIwJyTWcH_o8vSVn9kBFDN9U8s/exec";
     // ==========================================
 
     // --- 5分頁切換邏輯 ---
@@ -2487,7 +2474,6 @@
         document.getElementById('res-uid').innerText = response.uid;
         
         document.getElementById('qrImage').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + response.uid;
-        document.getElementById('barcodeImage').src = 'https://bwipjs-api.metafloor.com/?bcid=code128&text=' + response.uid + '&scale=2&includetext';
         
         document.getElementById('success-view').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });

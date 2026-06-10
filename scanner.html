@@ -131,6 +131,23 @@
     <div id="connectionStatus" style="font-size: 12px; color: #10B981; margin-top: 3px;">✅ 系統就緒</div>
   </div>
 
+  
+  <div style="display: flex; width: 100%; max-width: 600px; padding: 10px; box-sizing: border-box;">
+    <button id="btnScanMode" onclick="setMode('scan')" style="flex: 1; padding: 12px; background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 8px 0 0 8px;">📷 掃描模式</button>
+    <button id="btnManualMode" onclick="setMode('manual')" style="flex: 1; padding: 12px; background: #374151; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 0 8px 8px 0;">📋 手動名單</button>
+  </div>
+
+  <div id="manual-container" style="display: none; width: 100%; max-width: 600px; padding: 10px; box-sizing: border-box; flex-direction: column;">
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+      <button id="schoolFilterBtn" onclick="openSchoolModal()" style="flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #374151; background: #1F2937; color: white; font-size: 16px; text-align: left; cursor: pointer;">-- 顯示全部學校 --</button>
+      <button onclick="fetchUncheckedIn()" style="background: var(--primary); color: white; border: none; padding: 12px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">↻ 重整</button>
+    </div>
+    
+    <div id="manualList" style="background: var(--surface); border-radius: 8px; max-height: calc(100vh - 250px); overflow-y: auto;">
+       <div style="padding: 20px; text-align: center; color: #9CA3AF;">請先點擊「重整」載入名單</div>
+    </div>
+  </div>
+
   <div id="reader-container">
     <div id="reader"></div>
     
@@ -179,10 +196,23 @@
     <button class="overlay-btn" onclick="closeOverlay()" style="background:var(--error);">關閉並繼續</button>
   </div>
 
+  
+  <!-- 學校選擇彈出視窗 -->
+  <div id="schoolModal" class="overlay" style="z-index: 999; padding: 0;">
+    <div style="background: #1F2937; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; display: flex; flex-direction: column; max-height: 80vh; text-align: left;">
+      <h3 style="margin-top: 0; color: white; text-align: center; margin-bottom: 15px;">選擇學校</h3>
+      <input type="text" id="schoolSearchInput" placeholder="輸入關鍵字搜尋學校..." oninput="filterSchoolModal()" style="padding: 12px; border-radius: 6px; border: 1px solid #374151; background: #111827; color: white; margin-bottom: 15px; font-size: 16px;">
+      <div id="schoolModalList" style="overflow-y: auto; flex: 1; border-radius: 6px; background: #111827; border: 1px solid #374151;">
+        <!-- Schools will be injected here -->
+      </div>
+      <button onclick="closeSchoolModal()" style="margin-top: 15px; background: #4B5563; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; text-align: center;">取消</button>
+    </div>
+  </div>
+
   <script>
     // ==========================================
     // ⚠️ 請在下方雙引號中，貼上您 Google Apps Script 的「部署網址」!
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTi3rYPdZcaFUl965cTSREY416NqXiRONbmxkp2W9CNtTim7EW8qrwL0KLH2phcQ6h/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywpKJ91JW-HCjQ_cwL-HaoqdE08h_9JuXXqR-rxJsIwJyTWcH_o8vSVn9kBFDN9U8s/exec";
     // ==========================================
 
     const CORRECT_PIN = "8888"; // 工作人員密碼
@@ -211,6 +241,194 @@
     document.getElementById('staffPin').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') checkLogin();
     });
+
+    
+    // --- 手動名單模式邏輯 ---
+    let uncheckedAttendees = [];
+
+    function setMode(mode) {
+      if (mode === 'scan') {
+        document.getElementById('btnScanMode').style.background = 'var(--primary)';
+        document.getElementById('btnManualMode').style.background = '#374151';
+        document.getElementById('reader-container').style.display = 'flex';
+        document.getElementById('manual-container').style.display = 'none';
+      } else {
+        document.getElementById('btnScanMode').style.background = '#374151';
+        document.getElementById('btnManualMode').style.background = 'var(--primary)';
+        document.getElementById('reader-container').style.display = 'none';
+        document.getElementById('manual-container').style.display = 'flex';
+        if (uncheckedAttendees.length === 0) {
+          fetchUncheckedIn();
+        }
+      }
+    }
+
+    function fetchUncheckedIn() {
+      const manualList = document.getElementById('manualList');
+      const schoolFilter = document.getElementById('schoolFilter');
+      manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: #9CA3AF;">正在向伺服器取得名單...</div>';
+      document.getElementById('schoolFilterBtn').textContent = "載入中..."; currentSelectedSchool = "";
+
+      const callbackName = 'jsonpCallback_' + Math.round(100000 * Math.random());
+      
+      let timeoutId = setTimeout(() => {
+        if (window[callbackName]) {
+          alert('讀取逾時！請確認 Apps Script 是否已正確「重新部署」，或是網址是否有誤。');
+          manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--error);">讀取失敗 (逾時/未部署)</div>';
+          document.getElementById('schoolFilterBtn').textContent = "讀取失敗";
+          delete window[callbackName];
+        }
+      }, 10000);
+
+      window[callbackName] = function(data) {
+        clearTimeout(timeoutId);
+        delete window[callbackName];
+        if (data.error) {
+          alert('讀取失敗：' + data.error);
+          manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--error);">讀取失敗</div>';
+          document.getElementById('schoolFilterBtn').textContent = "讀取失敗";
+          return;
+        }
+        uncheckedAttendees = data;
+        populateSchoolFilter();
+        renderManualList();
+      };
+
+      const script = document.createElement('script');
+      script.src = GAS_WEB_APP_URL + '?action=getUncheckedIn&callback=' + callbackName;
+      script.onerror = function() {
+        clearTimeout(timeoutId);
+        delete window[callbackName];
+        alert('網路連線錯誤，或 Apps Script 尚未重新部署。');
+        manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--error);">連線失敗</div>';
+        document.getElementById('schoolFilterBtn').textContent = "讀取失敗";
+      };
+      document.head.appendChild(script);
+    }
+
+    
+    let currentSelectedSchool = "";
+    let uniqueSchools = [];
+
+    function openSchoolModal() {
+      document.getElementById('schoolModal').classList.add('active');
+      document.getElementById('schoolSearchInput').value = '';
+      renderSchoolModalList(uniqueSchools);
+      setTimeout(() => { document.getElementById('schoolSearchInput').focus(); }, 300);
+    }
+
+    function closeSchoolModal() {
+      document.getElementById('schoolModal').classList.remove('active');
+    }
+
+    function renderSchoolModalList(list) {
+      const container = document.getElementById('schoolModalList');
+      container.innerHTML = '';
+      
+      const allOpt = document.createElement('div');
+      allOpt.style = "padding: 12px 15px; border-bottom: 1px solid #374151; cursor: pointer; color: white;";
+      allOpt.textContent = "-- 顯示全部 (不限學校) --";
+      allOpt.onclick = () => selectSchool("");
+      container.appendChild(allOpt);
+
+      if (list.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.style = "padding: 12px 15px; color: #9CA3AF; text-align: center;";
+        emptyMsg.textContent = "沒有找到符合的學校";
+        container.appendChild(emptyMsg);
+        return;
+      }
+
+      list.forEach(s => {
+        const item = document.createElement('div');
+        item.style = "padding: 12px 15px; border-bottom: 1px solid #374151; cursor: pointer; color: white;";
+        item.textContent = s;
+        item.onclick = () => selectSchool(s);
+        container.appendChild(item);
+      });
+    }
+
+    function filterSchoolModal() {
+      const keyword = document.getElementById('schoolSearchInput').value.trim().toLowerCase();
+      if (!keyword) {
+        renderSchoolModalList(uniqueSchools);
+        return;
+      }
+      const filtered = uniqueSchools.filter(s => s.toLowerCase().includes(keyword));
+      renderSchoolModalList(filtered);
+    }
+
+    function selectSchool(schoolName) {
+      currentSelectedSchool = schoolName;
+      document.getElementById('schoolFilterBtn').textContent = schoolName ? "🔍 " + schoolName : "🔍 點選搜尋 / 過濾學校...";
+      closeSchoolModal();
+      filterManualList();
+    }
+
+    function populateSchoolFilter() {
+      uniqueSchools = [...new Set(uncheckedAttendees.map(a => a.school))].filter(s => s).sort();
+      // Update current button text
+      if (!currentSelectedSchool) {
+          document.getElementById('schoolFilterBtn').textContent = "🔍 點選搜尋 / 過濾學校...";
+      } else if (!uniqueSchools.includes(currentSelectedSchool)) {
+          currentSelectedSchool = "";
+          document.getElementById('schoolFilterBtn').textContent = "🔍 點選搜尋 / 過濾學校...";
+          filterManualList();
+      }
+    }
+
+    function filterManualList() {
+      renderManualList();
+    }
+
+    function renderManualList() {
+      const manualList = document.getElementById('manualList');
+      const selectedSchool = currentSelectedSchool;
+      manualList.innerHTML = '';
+
+      const filtered = uncheckedAttendees.filter(a => {
+        if (selectedSchool && a.school !== selectedSchool) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: #9CA3AF;">沒有找到符合的未報到人員</div>';
+        return;
+      }
+
+      filtered.forEach(a => {
+        const item = document.createElement('div');
+        item.style = 'padding: 15px; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; align-items: center;';
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: bold; font-size: 18px; color: white; margin-bottom: 4px;">${a.name}</div>
+            <div style="color: #9CA3AF; font-size: 14px;">${a.school}</div>
+          </div>
+          <button onclick="manualCheckIn('${a.uid}')" style="background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">報到</button>
+        `;
+        manualList.appendChild(item);
+      });
+    }
+
+    function manualCheckIn(uid) {
+      if (!confirm('確定要為此人員報到嗎？')) return;
+      processCheckIn(uid);
+      
+      // Remove from list after a short delay so the user sees the success overlay
+      setTimeout(() => {
+        uncheckedAttendees = uncheckedAttendees.filter(a => a.uid !== uid);
+        renderManualList();
+        
+        // Check if the current selected school has no more unchecked attendees
+        const selectedSchool = currentSelectedSchool;
+        if (selectedSchool) {
+            const hasMore = uncheckedAttendees.some(a => a.school === selectedSchool);
+            if (!hasMore) populateSchoolFilter();
+        } else {
+            populateSchoolFilter();
+        }
+      }, 2000);
+    }
 
     // --- 手動輸入 ---
     function checkManualCode() {
