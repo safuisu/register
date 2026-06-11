@@ -2359,8 +2359,8 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function submitRegistrationForm() {
-      if (!validateStep2()) {
+    function submitRegistrationForm() {
+      if (!validateStep2()) {
         return;
       }
 
@@ -2546,6 +2546,30 @@ function formatPhone(input) {
   input.value = val;
 }
 
+</script>
+
+<script>
+// === 「不用餐」互斥邏輯 ===
+(function() {
+  var mealNone = document.getElementById('meal-none');
+  var mealOptions = document.querySelectorAll('.meal-option');
+
+  mealNone.addEventListener('change', function() {
+    if (this.checked) {
+      for (var i = 0; i < mealOptions.length; i++) {
+        mealOptions[i].checked = false;
+      }
+    }
+  });
+
+  for (var i = 0; i < mealOptions.length; i++) {
+    mealOptions[i].addEventListener('change', function() {
+      if (this.checked) {
+        mealNone.checked = false;
+      }
+    });
+  }
+})();
 </script>
 
 
