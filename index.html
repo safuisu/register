@@ -2043,6 +2043,10 @@
     }
 
     // --- 驗證邏輯 ---
+    let firstErrorEl = null; // 追蹤第一個錯誤欄位
+
+    function resetFirstError() { firstErrorEl = null; }
+
     function showError(id, show) {
       const errorText = document.getElementById(id);
       const inputId = id.replace('-error', '');
@@ -2051,9 +2055,23 @@
       if (show) {
         errorText.style.display = 'block';
         if (input && input.tagName !== 'DIV') input.classList.add('error-border');
+        // 記錄第一個出錯的欄位
+        if (!firstErrorEl) {
+          firstErrorEl = input || errorText;
+        }
       } else {
         errorText.style.display = 'none';
         if (input && input.tagName !== 'DIV') input.classList.remove('error-border');
+      }
+    }
+
+    function scrollToFirstError() {
+      if (firstErrorEl) {
+        firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // 嘗試聚焦到該輸入框
+        if (firstErrorEl.tagName === 'INPUT' || firstErrorEl.tagName === 'SELECT') {
+          setTimeout(function() { firstErrorEl.focus(); }, 400);
+        }
       }
     }
 
@@ -2067,7 +2085,8 @@
       return emailReg.test(val.trim());
     }
 
-    function validateStep1() {
+    function validateStep1() {
+      resetFirstError();
       let isValid = true;
 
       const name = document.getElementById('name').value.trim();
@@ -2150,10 +2169,12 @@
         showError('publicServiceHours-error', false);
       }
 
-      return isValid;
-    }
-
+      if (!isValid) scrollToFirstError();
+      return isValid;
+    }
+
         function validateStep2_actual() {
+      resetFirstError();
       let isValid = true;
       const d1TrafficChecked = document.querySelector('input[name="day1Traffic"]:checked');
       if (!d1TrafficChecked) {
@@ -2188,10 +2209,12 @@
           }
         }
       }
+      if (!isValid) scrollToFirstError();
       return isValid;
     }
 
     function validateStep3_actual() {
+      resetFirstError();
       let isValid = true;
       const dietChecked = document.querySelector('input[name="diet"]:checked');
       if (!dietChecked) {
@@ -2250,10 +2273,12 @@
           }
         }
       }
+      if (!isValid) scrollToFirstError();
       return isValid;
     }
 
     function validateStep4_actual() {
+      resetFirstError();
       let isValid = true;
       const d1AfterChecked = document.querySelector('input[name="day1After"]:checked');
       if (!d1AfterChecked) {
@@ -2270,6 +2295,7 @@
       } else {
         showError('departure-error', false);
       }
+      if (!isValid) scrollToFirstError();
       return isValid;
     }
 
