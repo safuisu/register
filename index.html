@@ -2652,11 +2652,11 @@
             </div>
             <div class="step-item" id="indicator-2" style="flex: 1;">
               <div class="step-number">2</div>
-              <div class="step-label">交通接駁</div>
+              <div class="step-label">飲食住宿</div>
             </div>
             <div class="step-item" id="indicator-3" style="flex: 1;">
               <div class="step-number">3</div>
-              <div class="step-label">飲食住宿</div>
+              <div class="step-label">交通接駁</div>
             </div>
             <div class="step-item" id="indicator-4" style="flex: 1;">
               <div class="step-number">4</div>
@@ -2980,7 +2980,7 @@
 
                 <div></div> 
 
-                <button type="button" class="btn btn-primary" style="max-width: 260px;" onclick="goToNextStep()">下一步 (交通接駁) ➔</button>
+                <button type="button" class="btn btn-primary" style="max-width: 260px;" onclick="goToNextStep()">下一步 (飲食住宿) ➔</button>
 
               </div>
 
@@ -2993,122 +2993,6 @@
             
             <!-- STEP 2: 交通接駁 -->
             <div class="form-step" id="step2" style="display: none;">
-              <div class="section-title">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v-2H2v2zm0 4h2v-2H2v2zm0-8h2v-2H2v2zm4 8h16v-2H6v2zm0-4h16v-2H6v2zm0-8v2h16V9H6zm-4 0h2V7H2v2z"/></svg>
-                交通接駁 (抵達會場)
-              </div>
-              <div class="form-section-block">
-<!-- 8月25日 抵達會場交通方式 -->
-
-              <div class="form-group">
-
-                <label>8月25日 (第一天) 抵達會場交通方式<span class="required">*</span></label>
-
-                <div class="vertical-choice-list">
-
-                  <div class="choice-card">
-
-                    <input type="radio" id="d1-traffic-car" name="day1Traffic" value="自行開車" required onclick="toggleCarPlate(1, true)">
-
-                    <label class="choice-label" for="d1-traffic-car">自行開車</label>
-
-                  </div>
-
-                  <!-- 車牌輸入 -->
-
-                  <div class="conditional-panel" id="d1-car-panel">
-
-                    <label for="d1-car-plate" style="font-size: 13.5px;">自行開車車牌號碼 (通行登記用)<span class="required">*</span></label>
-
-                    <input type="text" id="d1-car-plate" placeholder="例如：ABC-1234">
-
-                    <div class="error-text" id="d1-car-plate-error">請填寫車牌號碼</div>
-
-                  </div>
-
-
-
-                  <div class="choice-card">
-
-                    <input type="radio" id="d1-traffic-shuttle" name="day1Traffic" value="搭乘高鐵站接駁車至會場" required onclick="toggleCarPlate(1, false)">
-
-                    <label class="choice-label" for="d1-traffic-shuttle">搭乘高鐵站接駁車至會場 (高鐵左營站 11:20 準時發車)</label>
-
-                  </div>
-
-                </div>
-
-                <div class="error-text" id="day1Traffic-error">請選擇第一天抵達交通方式</div>
-
-              </div>
-
-
-
-              
-<!-- 8月26日 抵達會場交通方式 -->
-
-              <div class="form-group">
-
-                <label>8月26日 (第二天) 抵達會場交通方式<span class="required">*</span></label>
-
-                <div class="vertical-choice-list">
-
-                  <div class="choice-card">
-
-                    <input type="radio" id="d2-traffic-car" name="day2Traffic" value="自行開車" required onclick="toggleCarPlate(2, true)">
-
-                    <label class="choice-label" for="d2-traffic-car">自行開車</label>
-
-                  </div>
-
-                  <!-- 車牌輸入 -->
-
-                  <div class="conditional-panel" id="d2-car-panel">
-
-                    <label for="d2-car-plate" style="font-size: 13.5px;">自行開車車牌號碼 (通行登記用)<span class="required">*</span></label>
-
-                    <input type="text" id="d2-car-plate" placeholder="例如：ABC-1234">
-
-                    <div class="error-text" id="d2-car-plate-error">請填寫車牌號碼</div>
-
-                  </div>
-
-
-
-                  <div class="choice-card">
-
-                    <input type="radio" id="d2-traffic-shuttle" name="day2Traffic" value="搭乘高鐵接駁車至會場" required onclick="toggleCarPlate(2, false)">
-
-                    <label class="choice-label" for="d2-traffic-shuttle">搭乘高鐵站接駁車至會場 (高鐵左營站 8:30 準時發車)</label>
-
-                  </div>
-
-                  <div class="choice-card">
-
-                    <input type="radio" id="d2-traffic-hotel" name="day2Traffic" value="搭乘義大皇家酒店接駁車至會場" required onclick="toggleCarPlate(2, false)">
-
-                    <label class="choice-label" for="d2-traffic-hotel">搭乘義大皇家酒店接駁車至會場 (飯店大廳 8:50 發車)</label>
-
-                  </div>
-
-                </div>
-
-                <div class="error-text" id="day2Traffic-error">請選擇第二天抵達交通方式</div>
-
-              </div>
-
-
-
-              
-              </div>
-              <div class="btn-group">
-                <button type="button" class="btn btn-secondary" style="max-width: 140px;" onclick="goToStep(1)">🡐 上一步</button>
-                <button type="button" class="btn btn-primary" style="max-width: 260px;" onclick="goToStep(3)">下一步 (飲食住宿) ➔</button>
-              </div>
-            </div>
-
-            <!-- STEP 3: 飲食與住宿 -->
-            <div class="form-step" id="step3" style="display: none;">
               <div class="section-title">
                 <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v-2H2v2zm0 4h2v-2H2v2zm0-8h2v-2H2v2zm4 8h16v-2H6v2zm0-4h16v-2H6v2zm0-8v2h16V9H6zm-4 0h2V7H2v2z"/></svg>
                 飲食與住宿
@@ -3283,9 +3167,7 @@
                             <div class="form-group" style="margin-bottom: 0;">
 
                               <label for="roommate-school">同房者學校全稱<span class="required">*</span></label>
-
-                              <input type="text" id="roommate-school" placeholder="例如：義守大學" style="padding: 12px 15px; font-size: 16px;">
-
+                              <input type="text" id="roommate-school" placeholder="請點擊選擇學校/機關" readonly style="padding: 12px 15px; font-size: 16px; cursor: pointer; background: #f8fafc;" onclick="openSchoolModal('roommate-school')">
                               <div class="error-text" id="roommate-school-error">請輸入同房者學校</div>
 
                             </div>
@@ -3333,12 +3215,131 @@
               
               </div>
               <div class="btn-group">
+                <button type="button" class="btn btn-secondary" style="max-width: 140px;" onclick="goToStep(1)">🡐 上一步</button>
+                <button type="button" class="btn btn-primary" style="max-width: 260px;" onclick="goToStep(3)">下一步 (交通接駁) ➔</button>
+              </div>
+            </div>
+
+            <!-- STEP 4: 參訪行程 -->
+            <div class="form-step" id="step3" style="display: none;">
+              <div class="section-title">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v-2H2v2zm0 4h2v-2H2v2zm0-8h2v-2H2v2zm4 8h16v-2H6v2zm0-4h16v-2H6v2zm0-8v2h16V9H6zm-4 0h2V7H2v2z"/></svg>
+                交通接駁 (抵達會場)
+              </div>
+              <div class="form-section-block">
+<!-- 8月25日 抵達會場交通方式 -->
+
+              <div class="form-group">
+
+                <label>8月25日 (第一天) 抵達會場交通方式<span class="required">*</span></label>
+
+                <div class="vertical-choice-list">
+
+                  <div class="choice-card">
+
+                    <input type="radio" id="d1-traffic-car" name="day1Traffic" value="自行開車" required onclick="toggleCarPlate(1, true)">
+
+                    <label class="choice-label" for="d1-traffic-car">自行開車</label>
+
+                  </div>
+
+                  <!-- 車牌輸入 -->
+
+                  <div class="conditional-panel" id="d1-car-panel">
+
+                    <label for="d1-car-plate" style="font-size: 13.5px;">自行開車車牌號碼 (通行登記用)<span class="required">*</span></label>
+
+                    <input type="text" id="d1-car-plate" placeholder="例如：ABC-1234">
+
+                    <div class="error-text" id="d1-car-plate-error">請填寫車牌號碼</div>
+
+                  </div>
+
+
+
+                  <div class="choice-card">
+
+                    <input type="radio" id="d1-traffic-shuttle" name="day1Traffic" value="搭乘高鐵站接駁車至會場" required onclick="toggleCarPlate(1, false)">
+
+                    <label class="choice-label" for="d1-traffic-shuttle">搭乘高鐵站接駁車至會場 (高鐵左營站 11:20 準時發車)</label>
+
+                  </div>
+
+                </div>
+
+                <div class="error-text" id="day1Traffic-error">請選擇第一天抵達交通方式</div>
+
+              </div>
+
+
+
+              
+<!-- 8月26日 抵達會場交通方式 -->
+
+              <div class="form-group">
+
+                <label>8月26日 (第二天) 抵達會場交通方式<span class="required">*</span></label>
+
+                <!-- 顯示給住宿者的訊息 -->
+                <div id="d2-traffic-stay-msg" style="display: none; background: #e0f2fe; border: 1px solid #bae6fd; padding: 15px; border-radius: 8px; color: #0369a1; font-size: 15px; margin-bottom: 10px;">
+                  您已在上一步勾選「住宿」，住宿者可搭乘接駁專車 (8:50 飯店大廳發車) 或自行前往會場。此項目免填。
+                </div>
+
+                <div id="d2-traffic-choices-container" class="vertical-choice-list">
+
+                  <div class="choice-card">
+
+                    <input type="radio" id="d2-traffic-car" name="day2Traffic" value="自行開車" onclick="toggleCarPlate(2, true)">
+
+                    <label class="choice-label" for="d2-traffic-car">自行開車</label>
+
+                  </div>
+
+                  <!-- 車牌輸入 -->
+
+                  <div class="conditional-panel" id="d2-car-panel">
+
+                    <label for="d2-car-plate" style="font-size: 13.5px;">自行開車車牌號碼 (通行登記用)<span class="required">*</span></label>
+
+                    <input type="text" id="d2-car-plate" placeholder="例如：ABC-1234">
+
+                    <div class="error-text" id="d2-car-plate-error">請填寫車牌號碼</div>
+
+                  </div>
+
+                  <div class="choice-card">
+
+                    <input type="radio" id="d2-traffic-shuttle" name="day2Traffic" value="搭乘高鐵接駁車至會場" onclick="toggleCarPlate(2, false)">
+
+                    <label class="choice-label" for="d2-traffic-shuttle">搭乘高鐵站接駁車至會場 (高鐵左營站 8:30 準時發車)</label>
+
+                  </div>
+
+                  <div class="choice-card">
+
+                    <input type="radio" id="d2-traffic-hotel" name="day2Traffic" value="搭乘義大皇家酒店接駁車至會場" onclick="toggleCarPlate(2, false)">
+
+                    <label class="choice-label" for="d2-traffic-hotel">搭乘義大皇家酒店接駁車至會場 (飯店大廳 8:50 發車)</label>
+
+                  </div>
+
+                </div>
+
+                <div class="error-text" id="day2Traffic-error">請選擇第二天抵達交通方式</div>
+
+              </div>
+
+
+
+              
+              </div>
+              <div class="btn-group">
                 <button type="button" class="btn btn-secondary" style="max-width: 140px;" onclick="goToStep(2)">🡐 上一步</button>
                 <button type="button" class="btn btn-primary" style="max-width: 260px;" onclick="goToStep(4)">下一步 (參訪行程) ➔</button>
               </div>
             </div>
 
-            <!-- STEP 4: 參訪行程 -->
+            <!-- STEP 3: 飲食與住宿 -->
             <div class="form-step" id="step4" style="display: none;">
               <div class="section-title">
                 <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v-2H2v2zm0 4h2v-2H2v2zm0-8h2v-2H2v2zm4 8h16v-2H6v2zm0-4h16v-2H6v2zm0-8v2h16V9H6zm-4 0h2V7H2v2z"/></svg>
@@ -3844,12 +3845,12 @@
         if (card) { card.style.opacity = '0.5'; card.style.cursor = 'not-allowed'; }
       } else if (remaining <= 10) {
         // 名額緊張
-        badge.textContent = '🔥 剩餘 ' + remaining + ' 個名額';
+        badge.textContent = '🔥 提供40個名額，剩餘 ' + remaining + ' 個名額';
         badge.style.background = '#fef3c7';
         badge.style.color = '#92400e';
       } else {
         // 尚有名額
-        badge.textContent = '剩餘 ' + remaining + ' 個名額';
+        badge.textContent = '提供40個名額，剩餘 ' + remaining + ' 個名額';
         badge.style.background = '#dcfce7';
         badge.style.color = '#166534';
       }
@@ -3965,8 +3966,19 @@
       const invoice = document.getElementById('invoice');
       const rooms = document.getElementsByName('roomType');
       
+      const d2TrafficContainer = document.getElementById('d2-traffic-choices-container');
+      const d2TrafficMsg = document.getElementById('d2-traffic-stay-msg');
+      
       if (show) {
         panel.classList.add('show');
+        if (d2TrafficContainer) d2TrafficContainer.style.display = 'none';
+        if (d2TrafficMsg) d2TrafficMsg.style.display = 'block';
+        // Clear Day 2 Traffic selection
+        document.querySelectorAll('input[name="day2Traffic"]').forEach(r => r.checked = false);
+        const d2CarPanel = document.getElementById('d2-car-panel');
+        if(d2CarPanel) d2CarPanel.classList.remove('show');
+        const d2CarPlate = document.getElementById('d2-car-plate');
+        if(d2CarPlate) d2CarPlate.value = '';
       } else {
         panel.classList.remove('show');
         invoice.value = '';
@@ -3975,6 +3987,9 @@
         rooms.forEach(r => r.checked = false);
         document.getElementById('roomType-error').style.display = 'none';
         toggleRoommate(false);
+        
+        if (d2TrafficContainer) d2TrafficContainer.style.display = 'block';
+        if (d2TrafficMsg) d2TrafficMsg.style.display = 'none';
       }
     }
 
@@ -4221,7 +4236,7 @@
       return isValid;
     }
 
-        function validateStep2_actual() {
+        function validateStep3_actual() {
       resetFirstError();
       let isValid = true;
       const d1TrafficChecked = document.querySelector('input[name="day1Traffic"]:checked');
@@ -4241,19 +4256,27 @@
         }
       }
 
-      const d2TrafficChecked = document.querySelector('input[name="day2Traffic"]:checked');
-      if (!d2TrafficChecked) {
-        showError('day2Traffic-error', true);
-        isValid = false;
-      } else {
+      const stayChecked = document.querySelector('input[name="stay"]:checked');
+      const isStay = stayChecked && stayChecked.value === '住宿';
+      
+      if (isStay) {
         showError('day2Traffic-error', false);
-        if (d2TrafficChecked.value === '自行開車') {
-          const plate = document.getElementById('d2-car-plate').value.trim();
-          if (!plate) {
-            showError('d2-car-plate-error', true);
-            isValid = false;
-          } else {
-            showError('d2-car-plate-error', false);
+        showError('d2-car-plate-error', false);
+      } else {
+        const d2TrafficChecked = document.querySelector('input[name="day2Traffic"]:checked');
+        if (!d2TrafficChecked) {
+          showError('day2Traffic-error', true);
+          isValid = false;
+        } else {
+          showError('day2Traffic-error', false);
+          if (d2TrafficChecked.value === '自行開車') {
+            const plate = document.getElementById('d2-car-plate').value.trim();
+            if (!plate) {
+              showError('d2-car-plate-error', true);
+              isValid = false;
+            } else {
+              showError('d2-car-plate-error', false);
+            }
           }
         }
       }
@@ -4261,7 +4284,7 @@
       return isValid;
     }
 
-    function validateStep3_actual() {
+    function validateStep2_actual() {
       resetFirstError();
       let isValid = true;
       const dietChecked = document.querySelector('input[name="diet"]:checked');
@@ -4358,8 +4381,8 @@
     }
 
     function validateStep2() {
-      const v2 = validateStep2_actual();
-      const v3 = validateStep3_actual();
+      const v2 = validateStep3_actual();
+      const v3 = validateStep2_actual();
       const v4 = validateStep4_actual();
       return v2 && v3 && v4;
     }
@@ -4382,10 +4405,19 @@
         ? `自行開車 (車牌: ${document.getElementById('d1-car-plate').value.trim()})` 
         : d1TrafficVal;
 
-      const d2TrafficVal = document.querySelector('input[name="day2Traffic"]:checked').value;
-      const d2TrafficFinal = d2TrafficVal === '自行開車' 
-        ? `自行開車 (車牌: ${document.getElementById('d2-car-plate').value.trim()})` 
-        : d2TrafficVal;
+      const stayVal_for_traffic = document.querySelector('input[name="stay"]:checked').value;
+      let d2TrafficFinal = '未填寫';
+      if (stayVal_for_traffic === '住宿') {
+        d2TrafficFinal = '已勾選住宿，免填';
+      } else {
+        const d2TrafficChecked = document.querySelector('input[name="day2Traffic"]:checked');
+        if (d2TrafficChecked) {
+          const d2TrafficVal = d2TrafficChecked.value;
+          d2TrafficFinal = d2TrafficVal === '自行開車' 
+            ? `自行開車 (車牌: ${document.getElementById('d2-car-plate').value.trim()})` 
+            : d2TrafficVal;
+        }
+      }
 
       const stayVal = document.querySelector('input[name="stay"]:checked').value;
       let stayDetail = '不住宿';
@@ -4485,13 +4517,19 @@
 
 
 
-      const d2TrafficVal = document.querySelector('input[name="day2Traffic"]:checked').value;
-
-      const d2TrafficFinal = d2TrafficVal === '自行開車' 
-
-        ? `自行開車 (車牌: ${document.getElementById('d2-car-plate').value.trim()})` 
-
-        : d2TrafficVal;
+      const stayVal_for_traffic = document.querySelector('input[name="stay"]:checked').value;
+      let d2TrafficFinal = '未填寫';
+      if (stayVal_for_traffic === '住宿') {
+        d2TrafficFinal = '已勾選住宿，免填';
+      } else {
+        const d2TrafficChecked = document.querySelector('input[name="day2Traffic"]:checked');
+        if (d2TrafficChecked) {
+          const d2TrafficVal = d2TrafficChecked.value;
+          d2TrafficFinal = d2TrafficVal === '自行開車' 
+            ? `自行開車 (車牌: ${document.getElementById('d2-car-plate').value.trim()})` 
+            : d2TrafficVal;
+        }
+      }
 
 
 
@@ -4877,7 +4915,10 @@ const universities = [
     "教育部"
 ];
 
-function openSchoolModal() {
+let currentSchoolInputId = 'school';
+
+function openSchoolModal(targetId = 'school') {
+  currentSchoolInputId = targetId;
   document.getElementById('schoolModal').style.display = 'flex';
   document.getElementById('schoolSearch').value = '';
   document.getElementById('schoolSearch').focus();
@@ -5009,23 +5050,39 @@ function autoFillAddress(schoolName) {
 
 
 function selectSchool(schoolName) {
-  const schoolInput = document.getElementById('school');
+  const inputField = document.getElementById(currentSchoolInputId);
   const otherInput = document.getElementById('school-other');
   
-  schoolInput.value = schoolName;
+  inputField.value = schoolName;
+  // 觸發 input 事件以清除錯誤提示
+  inputField.dispatchEvent(new Event('input', { bubbles: true }));
+  
   closeSchoolModal();
   
-  if(schoolName === '其他 (請於備註填寫)') {
-    otherInput.style.display = 'block';
-    otherInput.required = true;
-    otherInput.focus();
-  } else {
-    otherInput.style.display = 'none';
-    otherInput.required = false;
-    otherInput.value = '';
-    
-    // AUTO FILL ADDRESS MAGIC!
-    autoFillAddress(schoolName);
+  // 只有當選填的是主報名人的學校時，才處理「其他」選項與地址帶入
+  if (currentSchoolInputId === 'school') {
+    if(schoolName === '其他 (請於備註填寫)') {
+      otherInput.style.display = 'block';
+      otherInput.required = true;
+      otherInput.focus();
+    } else {
+      otherInput.style.display = 'none';
+      otherInput.required = false;
+      otherInput.value = '';
+      
+      // AUTO FILL ADDRESS MAGIC!
+      autoFillAddress(schoolName);
+    }
+  } else if (currentSchoolInputId === 'roommate-school') {
+    if (schoolName === '其他 (請於備註填寫)') {
+      inputField.value = '';
+      inputField.removeAttribute('readonly');
+      inputField.placeholder = '請手動輸入同房者學校名稱';
+      inputField.focus();
+    } else {
+      inputField.setAttribute('readonly', 'readonly');
+      inputField.placeholder = '請點擊選擇學校/機關';
+    }
   }
 }
 
