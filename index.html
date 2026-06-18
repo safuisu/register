@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>115學年度公私立大專校院招生研討會議</title>
+  <title>115學年度公私立大學校院招生研討會議</title>
 
   <style>
 
@@ -1777,7 +1777,7 @@
   <nav class="navbar">
     <a href="#" class="navbar-brand" onclick="switchView('home')">
       <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/><path d="M22 19c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V9.24l10 5.45 10-5.45V19z"/></svg>
-      115學年度公私立大專校院招生研討會議
+      115學年度公私立大學校院招生研討會議
     </a>
 
     <!-- 手機版漢堡選單按鈕 -->
@@ -1810,7 +1810,7 @@
 
       <div class="hero-banner">
 
-        <img src="https://www.isu.edu.tw/storage/images/cYwBfjQeUGXLlcm5400RoG5sZZnrhqELCV0XWmTd.jpg" alt="115學年度公私立大專校院招生研討會議" class="hero-image">
+        <img src="https://www.isu.edu.tw/storage/images/2gktkSNhdrliIC8IDpDTvqqQDaYCuUKPaOFTNI9a.jpg" alt="115學年度公私立大專校院招生研討會議" class="hero-image">
 
       </div>
 
@@ -2635,7 +2635,7 @@
 
           <p style="color: var(--text-light); margin-bottom: 30px; font-size: 15px; line-height: 1.6;">
 
-            請填寫個人資料、交通、住宿資訊，以便辦理報到、旅遊平安保險及交通食宿等安排。
+            請填寫個人資料、交通、住宿資訊，以利辦理報到、旅遊平安保險及交通食宿等安排。
 
           </p>
 
@@ -3186,33 +3186,28 @@
 
                         </div>
 
+                      </div>
 
+                      <div class="choice-card">
 
-                        <div class="choice-card">
+                        <input type="radio" id="room-double-auto" name="roomType" value="雙人房(由大會安排)" onclick="toggleRoommate(false)">
 
-                          <input type="radio" id="room-double-auto" name="roomType" value="雙人房(由大會安排)" onclick="toggleRoommate(false)">
-
-                          <label class="choice-label" for="room-double-auto" style="font-size: 13.5px;">雙人房 (雅致家庭房) - 尚無同房者，由大會安排</label>
-
-                        </div>
+                        <label class="choice-label" for="room-double-auto" style="font-size: 13.5px;">雙人房 (雅致家庭房) - 尚無同房者，由大會安排</label>
 
                       </div>
 
-                      <div class="error-text" id="roomType-error">請選擇入住房型</div>
-
                     </div>
+
+                    <div class="error-text" id="roomType-error">請選擇入住房型</div>
 
                   </div>
 
                 </div>
 
-                <div class="error-text" id="stay-error">請選擇住宿安排</div>
-
               </div>
 
+              <div class="error-text" id="stay-error">請選擇住宿安排</div>
 
-
-              
               </div>
               <div class="btn-group">
                 <button type="button" class="btn btn-secondary" style="max-width: 140px;" onclick="goToStep(1)">🡐 上一步</button>
@@ -3220,7 +3215,7 @@
               </div>
             </div>
 
-            <!-- STEP 4: 參訪行程 -->
+            <!-- STEP 3: 交通接駁 -->
             <div class="form-step" id="step3" style="display: none;">
               <div class="section-title">
                 <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v-2H2v2zm0 4h2v-2H2v2zm0-8h2v-2H2v2zm4 8h16v-2H6v2zm0-4h16v-2H6v2zm0-8v2h16V9H6zm-4 0h2V7H2v2z"/></svg>
@@ -3258,7 +3253,41 @@
               </div>
 
 
+              <div class="form-section-block" style="margin-top: 20px;">
 
+                <!-- 自動偵測晚宴提示 -->
+                <div id="dinner-auto-note" style="display: none; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">✅</span>
+                    <div>
+                      <div style="font-weight: 600; color: #1E40AF; font-size: 15px;">您已勾選「晚宴」用餐</div>
+                      <div style="color: #3B82F6; font-size: 13.5px; margin-top: 2px;">參與晚宴者可搭乘接駁專車或自行前往義大皇家酒店，晚宴結束後，未住宿者請自行安排返程交通。</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="day1After-group">
+                  <div class="form-group">
+                    <label id="day1After-label">8月25日 (第一天) 會議結束後交通安排<span class="required">*</span></label>
+                    <div class="vertical-choice-list">
+                      <div class="choice-card" id="dinner-choice-card">
+                        <input type="radio" id="d1-after-dinner" name="day1After" value="參與晚宴(參與晚宴者可搭乘接駁專車或自行前往義大皇家酒店，晚宴結束後未安排住宿者，請自行安排返程交通)" required>
+                        <label class="choice-label" for="d1-after-dinner">參與晚宴 (搭乘接駁車或自行前往義大皇家酒店)</label>
+                      </div>
+                      <div class="choice-card">
+                        <input type="radio" id="d1-after-shuttle" name="day1After" value="不參與晚宴，搭接駁車至高鐵左營站" required>
+                        <label class="choice-label" for="d1-after-shuttle">不參與晚宴（搭乘接駁車前往高鐵左營站，18:10發車）</label>
+                      </div>
+                      <div class="choice-card">
+                        <input type="radio" id="d1-after-self" name="day1After" value="不參與晚宴，交通自理" required>
+                        <label class="choice-label" for="d1-after-self">不參與晚宴（交通自理）</label>
+                      </div>
+                    </div>
+                    <div class="error-text" id="day1After-error">請選擇會議結束後安排</div>
+                  </div>
+                </div>
+
+              </div>
               
 <!-- 8月26日 抵達會場交通方式 -->
 
@@ -3297,7 +3326,6 @@
 
 
 
-              
               </div>
               <div class="btn-group">
                 <button type="button" class="btn btn-secondary" style="max-width: 140px;" onclick="goToStep(2)">🡐 上一步</button>
@@ -3312,61 +3340,6 @@
                 參訪行程與賦歸
               </div>
               <div class="form-section-block">
-<!-- 8月25日 會議結束後安排 -->
-
-              
-              <!-- 自動偵測晚宴提示 -->
-              <div id="dinner-auto-note" style="display: none; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="font-size: 20px;">✅</span>
-                  <div>
-                    <div style="font-weight: 600; color: #1E40AF; font-size: 15px;">您已勾選「晚宴」用餐</div>
-                    <div style="color: #3B82F6; font-size: 13.5px; margin-top: 2px;">參與晚宴者可搭乘接駁專車或自行前往義大皇家酒店，晚宴結束後，未住宿者請自行安排返程交通。</div>
-                  </div>
-                </div>
-              </div>
-
-              <div id="day1After-group">
-<div class="form-group">
-
-                <label id="day1After-label">8月25日 (第一天) 會議結束後安排<span class="required">*</span></label>
-
-                <div class="vertical-choice-list">
-
-                  <div class="choice-card" id="dinner-choice-card">
-
-                    <input type="radio" id="d1-after-dinner" name="day1After" value="參與晚宴(參與晚宴者可搭乘接駁專車或自行前往義大皇家酒店，晚宴結束後未安排住宿者，請自行安排返程交通)" required>
-
-                    <label class="choice-label" for="d1-after-dinner">參與晚宴 (搭乘接駁車或自行開車前往義大皇家酒店)</label>
-
-                  </div>
-
-                  <div class="choice-card">
-
-                    <input type="radio" id="d1-after-shuttle" name="day1After" value="不參與晚宴，搭接駁車至高鐵左營站" required>
-
-                    <label class="choice-label" for="d1-after-shuttle">不參與晚宴（搭乘接駁車前往高鐵左營站，18:10發車）</label>
-
-                  </div>
-
-                  <div class="choice-card">
-
-                    <input type="radio" id="d1-after-self" name="day1After" value="不參與晚宴，交通自理" required>
-
-                    <label class="choice-label" for="d1-after-self">不參與晚宴（交通自理）</label>
-
-                  </div>
-
-                </div>
-
-                <div class="error-text" id="day1After-error">請選擇會議結束後安排</div>
-
-              </div>
-              </div>
-
-
-
-              
 <!-- 8月26日 會議結束離校與參訪調查 -->
 
               <div class="form-group">
@@ -3887,8 +3860,8 @@
       document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
       document.getElementById('indicator-' + step).classList.add('active');
       
-      // 智慧連動：晚宴勾選狀態與第四關「會議結束後安排」連動
-      if (step === 4) {
+      // 智慧連動：晚宴勾選狀態與第三關「會議結束後交通安排」連動
+      if (step === 3) {
         const dinnerChecked = document.getElementById('meal-d1-dinner').checked;
         const day1AfterGroup = document.getElementById('day1After-group');
         const dinnerAutoNote = document.getElementById('dinner-auto-note');
@@ -4192,6 +4165,15 @@
         function validateStep3_actual() {
       resetFirstError();
       let isValid = true;
+      
+      const d1AfterChecked = document.querySelector('input[name="day1After"]:checked');
+      if (!d1AfterChecked) {
+        showError('day1After-error', true);
+        isValid = false;
+      } else {
+        showError('day1After-error', false);
+      }
+
       const d1TrafficChecked = document.querySelector('input[name="day1Traffic"]:checked');
       if (!d1TrafficChecked) {
         showError('day1Traffic-error', true);
@@ -4285,13 +4267,6 @@
     function validateStep4_actual() {
       resetFirstError();
       let isValid = true;
-      const d1AfterChecked = document.querySelector('input[name="day1After"]:checked');
-      if (!d1AfterChecked) {
-        showError('day1After-error', true);
-        isValid = false;
-      } else {
-        showError('day1After-error', false);
-      }
 
       const departureChecked = document.querySelector('input[name="departure"]:checked');
       if (!departureChecked) {
