@@ -685,6 +685,52 @@
 
     }
 
+    /* 手機板：接駁車表格轉卡片排版 */
+    @media (max-width: 600px) {
+      .shuttle-table {
+        border: none;
+        font-size: 14.5px;
+      }
+      .shuttle-table thead {
+        display: none;
+      }
+      .shuttle-table tbody tr {
+        display: block;
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+      }
+      .shuttle-table tbody tr:last-child {
+        margin-bottom: 0;
+      }
+      .shuttle-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 5px 0;
+        border-bottom: 1px dashed #e2e8f0;
+        background: transparent;
+      }
+      .shuttle-table td:last-child {
+        border-bottom: none;
+      }
+      .shuttle-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 13px;
+        min-width: 80px;
+        flex-shrink: 0;
+      }
+      .shuttle-table td[rowspan] {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-bottom: 4px;
+      }
+    }
+
 
 
     .privacy-box {
@@ -1928,25 +1974,25 @@
 
               <tr>
 
-                <td style="font-weight: 600; color: var(--accent);">去程</td>
+                <td data-label="行程別" style="font-weight: 600; color: var(--accent);">去程</td>
 
-                <td style="font-weight: bold; font-size:14.5px;">11:20</td>
+                <td data-label="發車時間" style="font-weight: bold; font-size:14.5px;">11:20</td>
 
-                <td>高鐵左營站 ➔ 義守大學</td>
+                <td data-label="行駛路線">高鐵左營站 ➔ 義守大學</td>
 
-                <td>高鐵左營站 <strong>4號出口 (星巴克前)</strong></td>
+                <td data-label="集合地點">高鐵左營站 <strong>4號出口 (星巴克前)</strong></td>
 
               </tr>
 
               <tr>
 
-                <td style="font-weight: 600; color: var(--text-light);">回程</td>
+                <td data-label="行程別" style="font-weight: 600; color: var(--text-light);">回程</td>
 
-                <td style="font-weight: bold; font-size:14.5px;">18:10</td>
+                <td data-label="發車時間" style="font-weight: bold; font-size:14.5px;">18:10</td>
 
-                <td>義守大學 ➔ 高鐵左營站</td>
+                <td data-label="行駛路線">義守大學 ➔ 高鐵左營站</td>
 
-                <td>體育館外廣場</td>
+                <td data-label="集合地點">體育館外廣場</td>
 
               </tr>
 
@@ -1986,45 +2032,49 @@
 
               <tr>
 
-                <td style="font-weight: 600; color: var(--accent);" rowspan="2">去程</td>
+                <td data-label="行程別" style="font-weight: 600; color: var(--accent);">去程 ①</td>
 
-                <td style="font-weight: bold; font-size:14.5px;">08:30</td>
+                <td data-label="發車時間" style="font-weight: bold; font-size:14.5px;">08:30</td>
 
-                <td>高鐵左營站 ➔ 義守大學</td>
+                <td data-label="行駛路線">高鐵左營站 ➔ 義守大學</td>
 
-                <td>高鐵左營站 <strong>4號出口 (星巴克前)</strong></td>
-
-              </tr>
-
-              <tr>
-
-                <td style="font-weight: bold; font-size:14.5px;">08:50</td>
-
-                <td>義大皇家酒店 ➔ 義守大學</td>
-
-                <td>義大皇家酒店 <strong>飯店大廳</strong></td>
+                <td data-label="集合地點">高鐵左營站 <strong>4號出口 (星巴克前)</strong></td>
 
               </tr>
 
               <tr>
 
-                <td style="font-weight: 600; color: var(--text-light);" rowspan="2">回程</td>
+                <td data-label="行程別" style="font-weight: 600; color: var(--accent);">去程 ②</td>
 
-                <td style="font-weight: bold; font-size:14.5px;">12:30</td>
+                <td data-label="發車時間" style="font-weight: bold; font-size:14.5px;">08:50</td>
 
-                <td>義守大學 ➔ 高鐵左營站</td>
+                <td data-label="行駛路線">義大皇家酒店 ➔ 義守大學</td>
 
-                <td>體育館外廣場</td>
+                <td data-label="集合地點">義大皇家酒店 <strong>飯店大廳</strong></td>
 
               </tr>
 
               <tr>
 
-                <td style="font-weight: bold; color: var(--text-muted);">16：30<br>(仍須依實際狀況調整)</td>
+                <td data-label="行程別" style="font-weight: 600; color: var(--text-light);">回程 ①</td>
 
-                <td>參訪地點 ➔ 高鐵左營站</td>
+                <td data-label="發車時間" style="font-weight: bold; font-size:14.5px;">12:30</td>
 
-                <td></td>
+                <td data-label="行駛路線">義守大學 ➔ 高鐵左營站</td>
+
+                <td data-label="集合地點">體育館外廣場</td>
+
+              </tr>
+
+              <tr>
+
+                <td data-label="行程別" style="font-weight: 600; color: var(--text-light);">回程 ②</td>
+
+                <td data-label="發車時間" style="font-weight: bold; color: var(--text-muted);">16：30<br>(依實際狀況調整)</td>
+
+                <td data-label="行駛路線">參訪地點 ➔ 高鐵左營站</td>
+
+                <td data-label="集合地點"></td>
 
               </tr>
 
@@ -2600,7 +2650,7 @@
                   <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">「115學年度公私立大學校院招生研討會議」討論提案</div>
                 </div>
               </div>
-              <a href="https://www.isu.edu.tw/storage/files/mQ79I8aV9VNLNMklsam9eGELbNEqJU1ParP5pPOD.odt" target="_blank" style="background: var(--primary); color: white; padding: 8px 18px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap;">下載</a>
+              <a href="https://www.isu.edu.tw/storage/files/XLDr6EoqqCSMV1lFmjkRJ4Qms9u7Xy1LDD5rrVqr.odt" target="_blank" style="background: var(--primary); color: white; padding: 8px 18px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap;">下載</a>
             </div>
 
           </div>
