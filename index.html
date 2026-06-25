@@ -3740,7 +3740,7 @@
 
     // ⚠️ 請在下方雙引號中，貼上您 Google Apps Script 的「部署網址」!
 
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywpKJ91JW-HCjQ_cwL-HaoqdE08h_9JuXXqR-rxJsIwJyTWcH_o8vSVn9kBFDN9U8s/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwb1O2nBCzYA-SWvICOUIR9RRcj3NMwlUNH3dd5_aJ72gYfdwFP16D_Dz_7q_QL-TVT/exec";
 
     // ==========================================
 
@@ -3777,6 +3777,36 @@
       }
       // 查詢美濃名額
       checkTourAQuota();
+
+      // ===== 報名截止前端檢查 (7/16 00:00) =====
+      var deadline = new Date('2026-07-16T00:00:00+08:00');
+      if (new Date() >= deadline) {
+        // 1. 將報名表單區塊替換成截止訊息
+        var formCard = document.querySelector('#register-view .form-container-card');
+        if (formCard) {
+          formCard.innerHTML =
+            '<div style="text-align:center;padding:60px 20px;">' +
+              '<div style="font-size:70px;margin-bottom:20px;">🚫</div>' +
+              '<h2 style="color:#dc2626;font-size:28px;margin-bottom:15px;font-weight:bold;">報名已截止</h2>' +
+              '<p style="color:#4b5563;font-size:17px;line-height:1.6;">感謝您的關注，本活動報名已於 7 月 15 日截止。<br>如有任何問題，請洽詢主辦單位。</p>' +
+              '<div style="margin-top:30px;"><button class="btn btn-primary" style="padding:12px 30px;font-size:16px;" onclick="switchView(\'home\')">返回首頁</button></div>' +
+            '</div>';
+        }
+        // 2. 首頁的報名按鈕改為停用
+        var homeBtns = document.querySelectorAll('#home-view button');
+        homeBtns.forEach(function(btn) {
+          if (btn.getAttribute('onclick') === "switchView('register')") {
+            btn.innerHTML = '報名已於 7/15 截止';
+            btn.disabled = true;
+            btn.style.background = '#9ca3af';
+            btn.style.borderColor = '#9ca3af';
+            btn.style.boxShadow = 'none';
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+          }
+        });
+      }
+      // =========================================
     });
 
     // === 美濃名額限制 (最多40人) ===
@@ -5244,4 +5274,3 @@ function formatPhone(input) {
 
 
 </html>
-
