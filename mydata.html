@@ -168,38 +168,41 @@
       </div>
 
       <div class="form-group" style="margin-top:20px;">
-        <label>8月25日 (第一天) 住宿安排<span class="req">*</span></label>
+        <label>8月25日 (第一天) 住宿安排</label>
+        <div style="font-size: 13px; color: #92400e; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 10px 14px; margin-bottom: 4px;">
+          🔒 此欄位為唯讀，修改請洽業辦單位。
+        </div>
         <div style="font-size: 13px; color: #64748B; margin-bottom: 10px; padding: 10px; background: #F8FAFC; border-left: 3px solid #1F4E79;">
           ＊住宿地點為義大皇家酒店。房型及大會合約價請參照「住宿資訊」頁面說明。<br>
           ＊適逢暑假期間，房間量有限。若雙人房房間出現不足時，將依據報名順序協調改為單人房入住。
         </div>
         
-        <div class="vertical-choice-list">
+        <div class="vertical-choice-list" style="pointer-events:none; opacity:0.75;">
           <div class="choice-card">
-            <input type="radio" id="stay-no" name="edit-stay" value="不住宿">
+            <input type="radio" id="stay-no" disabled name="edit-stay" value="不住宿">
             <label class="choice-label" for="stay-no">不住宿</label>
           </div>
           <div class="choice-card">
-            <input type="radio" id="stay-yes" name="edit-stay" value="住宿">
+            <input type="radio" id="stay-yes" name="edit-stay" disabled value="住宿">
             <label class="choice-label" for="stay-yes">住宿 (義大皇家酒店，由主辦單位統計房型並登錄安排)</label>
           </div>
           
           <div class="conditional-panel" id="lodging-panel">
             <div class="form-group">
               <label for="edit-invoice">發票抬頭與統一編號 (公務核銷發票用)</label>
-              <input type="text" id="edit-invoice" placeholder="例如：義守大學 07927743">
+              <input type="text" id="edit-invoice" disabled style="background:#f1f5f9;color:#64748b;" placeholder="例如：義守大學 07927743">
             </div>
 
             <div class="form-group" style="margin-bottom: 0;">
               <label>請選擇入住房型：</label>
               <div class="vertical-choice-list" style="margin-top: 8px;">
                 <div class="choice-card">
-                  <input type="radio" id="edit-room-single" name="edit-roomType" value="單人房(山景客房) $3500/間(含1餐)">
+                  <input type="radio" id="edit-room-single" disabled name="edit-roomType" value="單人房(山景客房) $3500/間(含1餐)">
                   <label class="choice-label" for="edit-room-single" style="font-size: 13.5px;">單人房 (山景客房，一大床) - $3,500/間 (含 1 客早餐)</label>
                 </div>
                 
                 <div class="choice-card">
-                  <input type="radio" id="edit-room-double" name="edit-roomType" value="雙人房(雅致家庭房，兩中床) $4000/間(含2餐)">
+                  <input type="radio" id="edit-room-double" disabled name="edit-roomType" value="雙人房(雅致家庭房，兩中床) $4000/間(含2餐)">
                   <label class="choice-label" for="edit-room-double" style="font-size: 13.5px;">雙人房 (雅致家庭房，兩中床) - $4,000/間 (含 2 客早餐)</label>
                 </div>
 
@@ -208,17 +211,17 @@
                   <div class="form-row">
                     <div class="form-group" style="margin-bottom: 0;">
                       <label for="edit-roommate-school">同房者學校全稱</label>
-                      <input type="text" id="edit-roommate-school" placeholder="請輸入同房者學校">
+                      <input type="text" id="edit-roommate-school" disabled style="background:#f1f5f9;color:#64748b;" placeholder="請輸入同房者學校">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
                       <label for="edit-roommate-name">同房者姓名</label>
-                      <input type="text" id="edit-roommate-name" placeholder="例如：林大同">
+                      <input type="text" id="edit-roommate-name" disabled style="background:#f1f5f9;color:#64748b;" placeholder="例如：林大同">
                     </div>
                   </div>
                 </div>
 
                 <div class="choice-card">
-                  <input type="radio" id="edit-room-double-auto" name="edit-roomType" value="雙人房(由大會安排)">
+                  <input type="radio" id="edit-room-double-auto" disabled name="edit-roomType" value="雙人房(由大會安排)">
                   <label class="choice-label" for="edit-room-double-auto" style="font-size: 13.5px;">雙人房 (雅致家庭房) - 尚無同房者，由大會安排</label>
                 </div>
               </div>
@@ -320,29 +323,45 @@
       badge.style.background = '#dbeafe';
       badge.style.color = '#1e40af';
 
-      var cbName = 'onTourAQuotaResult';
-      window[cbName] = function(response) {
+      function onQuotaResult(response) {
         if (response && typeof response.tourACount === 'number') {
           tourACount = response.tourACount;
         } else {
           tourACount = 0;
         }
         updateTourABadge();
-        var s = document.getElementById('quota-script');
-        if (s) s.parentNode.removeChild(s);
-      };
+      }
 
-      var url = GAS_WEB_APP_URL + '?callback=' + cbName + '&action=getTourACount&_t=' + new Date().getTime();
-      var script = document.createElement('script');
-      script.id = 'quota-script';
-      script.src = url;
-      script.onerror = function() {
+      function onQuotaError() {
         badge.textContent = '限 40 人';
         badge.style.background = '#fef3c7';
         badge.style.color = '#92400e';
-      };
-      document.body.appendChild(script);
+      }
+
+      if (isGAS) {
+        google.script.run
+          .withSuccessHandler(onQuotaResult)
+          .withFailureHandler(onQuotaError)
+          .getTourACount();
+      } else {
+        var cbName = 'onTourAQuotaResult_' + new Date().getTime();
+        window[cbName] = function(response) {
+          onQuotaResult(response);
+          var s = document.getElementById('quota-script');
+          if (s) s.parentNode.removeChild(s);
+          delete window[cbName];
+        };
+        var url = GAS_WEB_APP_URL + '?callback=' + cbName + '&action=getTourACount&_t=' + new Date().getTime();
+        var old_s = document.getElementById('quota-script');
+        if (old_s) old_s.parentNode.removeChild(old_s);
+        var script = document.createElement('script');
+        script.id = 'quota-script';
+        script.src = url;
+        script.onerror = onQuotaError;
+        document.body.appendChild(script);
+      }
     }
+
     function updateTourABadge() {
       var badge = document.getElementById('tour-a-quota-badge');
       var radio = document.getElementById('dep-tour-a');
@@ -384,16 +403,6 @@
 
   var GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbywpKJ91JW-HCjQ_cwL-HaoqdE08h_9JuXXqR-rxJsIwJyTWcH_o8vSVn9kBFDN9U8s/exec';
   var currentIdCard = '';
-  document.addEventListener('DOMContentLoaded', function() {
-    checkTourAQuota();
-    
-    var urlParams = new URLSearchParams(window.location.search);
-    var uid = urlParams.get('uid');
-    if (uid) {
-      document.getElementById('lookupCard').style.display = 'none';
-      doPreview(uid);
-    }
-  });
   var currentBirthDate = '';
   if (!isGAS) { document.getElementById('backLink').href = 'index.html'; }
 
@@ -403,72 +412,6 @@
     var el = document.getElementById('saveStatus');
     el.textContent = msg; el.className = 'status-msg show ' + (isError ? 'error' : 'success');
     setTimeout(function() { el.classList.remove('show'); }, 5000);
-  }
-
-  
-  function doPreview(uid) {
-    document.getElementById('loadingState').classList.add('show');
-    if (isGAS) {
-      google.script.run.withSuccessHandler(onPreviewResult).withFailureHandler(function(e){onPreviewResult({success:false,message:e.message})}).previewMyData(uid);
-    } else {
-      var url = GAS_WEB_APP_URL + '?callback=onPreviewCallback&action=previewMyData&uid=' + encodeURIComponent(uid);
-      window.onPreviewCallback = onPreviewResult;
-      var s = document.createElement('script'); s.src = url; s.onerror = function() { onPreviewResult({success:false, message:'連線失敗'}) }; document.body.appendChild(s);
-    }
-  }
-
-  function onPreviewResult(result) {
-    document.getElementById('loadingState').classList.remove('show');
-    if (!result.success) { 
-      document.getElementById('lookupCard').style.display = 'block'; 
-      return showError(result.message || '查詢失敗'); 
-    }
-    showPreviewUI(result.data);
-  }
-
-  function showPreviewUI(data) {
-    document.getElementById('dataSection').style.display = 'none';
-    document.getElementById('lookupCard').style.display = 'none';
-    
-    var urlParams = new URLSearchParams(window.location.search);
-    var uid = urlParams.get('uid') || '';
-    var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(uid);
-    
-    var existingPreview = document.getElementById('previewCard');
-    if (existingPreview) existingPreview.remove();
-
-    var previewHtml = `
-      <div class="card" id="previewCard" style="max-width: 600px; margin: 0 auto; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
-        <div class="card-title" style="justify-content: center; font-size: 1.4rem;">🎉 報名資料總覽</div>
-        <p style="text-align: center; color: #6b7280; font-size: 0.95rem; margin-bottom: 20px;">以下是您的專屬行程安排</p>
-        
-        <div style="text-align: center; margin-bottom: 25px;">
-          <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: #4B5563; font-weight: bold;">您的報到 QR Code</p>
-          <div style="display: inline-block; padding: 10px; background: white; border: 1px solid #E5E7EB; border-radius: 12px;">
-            <img src="${qrUrl}" alt="QR Code" width="150" height="150" style="display: block; border: 0;">
-          </div>
-        </div>
-        
-        <div class="readonly-grid" style="grid-template-columns: 1fr; gap: 12px;">
-          <div class="readonly-item"><div class="label">姓名</div><div class="value" style="font-size: 1.1rem; color: var(--primary);">${data['姓名']}</div></div>
-          <div class="readonly-item"><div class="label">學校/機關</div><div class="value">${data['學校機關名稱']}</div></div>
-          <div class="readonly-item"><div class="label">用餐需求</div><div class="value">${data['用餐需求']}</div></div>
-          <div class="readonly-item"><div class="label">第一天住宿</div><div class="value">${data['第一天住宿安排']}</div></div>
-          <div class="readonly-item"><div class="label">第一天抵達交通</div><div class="value">${data['第一天抵達交通方式']}</div></div>
-          <div class="readonly-item"><div class="label">第一天結束安排</div><div class="value">${data['第一天會議結束安排']}</div></div>
-          <div class="readonly-item"><div class="label">第二天抵達交通</div><div class="value">${data['第二天抵達交通方式']}</div></div>
-          <div class="readonly-item"><div class="label">第二天離校/參訪</div><div class="value" style="color: #047857;">${data['第二天離校/參訪離校']}</div></div>
-        </div>
-        
-        <div style="margin-top: 30px; text-align: center;">
-          <button class="btn" onclick="window.location.href='?page=mydata'" style="width: auto; padding: 12px 30px; background: #4b5563;">重新登入以修改資料</button>
-        </div>
-      </div>
-    `;
-    
-    var container = document.createElement('div');
-    container.innerHTML = previewHtml;
-    document.querySelector('.container').appendChild(container.firstElementChild);
   }
 
   function doLookup() {
@@ -498,6 +441,8 @@
   }
 
   function populateData(data) {
+    checkTourAQuota();
+    window._originalStayData = data['第一天住宿安排'] || '不住宿';
     var readonlyMap = [{key:'身分證字號',label:'身分證字號'},{key:'出生年月日',label:'出生年月日'},{key:'UID',label:'報名序號'},{key:'報到狀態',label:'報到狀態'}];
     var html = '';
     readonlyMap.forEach(function(item) { html += '<div class="readonly-item"><div class="label">' + item.label + '</div><div class="value">' + (data[item.key]||'—') + '</div></div>'; });
@@ -600,19 +545,8 @@
     var btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = '儲存中...';
     var meals = []; document.querySelectorAll('#edit-meals input[type="checkbox"]:checked').forEach(function(cb) { meals.push(cb.value); });
     
-      var stayFinal = '不住宿';
-      if(document.getElementById('stay-yes').checked) {
-        var inv = document.getElementById('edit-invoice').value.trim() || '無';
-        var rtInput = document.querySelector('input[name="edit-roomType"]:checked');
-        var rt = rtInput ? rtInput.value : '';
-        stayFinal = '住宿 (發票抬頭與統編: ' + inv + '; 房型: ' + rt;
-        if(rtInput && rtInput.id === 'edit-room-double') {
-          var rs = document.getElementById('edit-roommate-school').value.trim();
-          var rn = document.getElementById('edit-roommate-name').value.trim();
-          if(rs || rn) stayFinal += '; 同房者: ' + rs + ' - ' + rn;
-        }
-        stayFinal += ')';
-      }
+      // 住宿欄位為唯讀，直接沿用原始資料不允許修改
+      var stayFinal = window._originalStayData || '不住宿';
 
     var payload = {
       '姓名': document.getElementById('edit-name').value.trim(),
