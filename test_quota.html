@@ -1,0 +1,9 @@
+﻿<script>
+window.onTourAQuotaResult = function(response) {
+    console.log(response);
+    alert(JSON.stringify(response));
+};
+var script = document.createElement('script');
+script.src = 'https://script.google.com/macros/s/AKfycbwb1O2nBCzYA-SWvICOUIR9RRcj3NMwlUNH3dd5_aJ72gYfdwFP16D_Dz_7q_QL-TVT/exec?callback=onTourAQuotaResult&action=getTourACount';
+document.body.appendChild(script);
+</script>
