@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>查詢/修改報名資料</title>
+  <style>
+    :root {
+      --primary: #1f4e79;
+      --secondary: #4c1130;
+      --accent: #d9534f;
+      --bg: #f3f4f6;
+      --text: #1f2937;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --success: #10b981;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: var(--text); line-height: 1.6; }
+    .header { background: var(--primary); color: white; padding: 20px 15px; text-align: center; position: relative; }
+    .header h1 { margin: 0; font-size: 1.5rem; }
+    .header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.9; }
+    .back-link { display: inline-block; margin-top: 10px; color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.8; transition: opacity 0.2s; }
+    .back-link:hover { opacity: 1; text-decoration: underline; }
+    .container { max-width: 800px; margin: 30px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 25px; margin-bottom: 25px; }
+    .card-title { font-size: 1.2rem; font-weight: 600; color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+    .form-group { margin-bottom: 20px; flex: 1; }
+    .form-row { display: flex; flex-wrap: wrap; gap: 20px; }
+    @media(max-width: 600px) { .form-row { flex-direction: column; gap: 0; } }
+    label { display: block; font-size: 0.9rem; font-weight: 600; color: #4b5563; margin-bottom: 8px; }
+    label span.req { color: var(--accent); }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,78,121,0.1); }
+    
+    /* Checkbox & Radio Style from index.html */
+    .choice-group { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 10px; margin-bottom: 5px; }
+    .choice-card { position: relative; }
+    .choice-card input[type="radio"], .choice-card input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .choice-label { display: flex; align-items: center; justify-content: flex-start; cursor: pointer; font-size: 15px; font-weight: 500; color: #1E293B; transition: all 0.2s ease; user-select: none; }
+    .choice-label::before { content: ""; display: inline-block; width: 18px; height: 18px; border: 2px solid #CBD5E1; border-radius: 50%; margin-right: 8px; background-color: white; transition: all 0.2s ease; vertical-align: middle; flex-shrink: 0; }
+    .choice-card input[type="checkbox"] + .choice-label::before { border-radius: 4px; }
+    .choice-card input:checked + .choice-label::before { border-color: var(--primary); background-color: var(--primary); box-shadow: inset 0 0 0 4px white; }
+    .vertical-choice-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: background-color 0.2s; }
+    .btn:hover { background: #163a5a; }
+    .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+    .loading-overlay { display: none; text-align: center; padding: 40px; }
+    .loading-overlay.show { display: block; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #dataSection { display: none; }
+    #dataSection.show { display: block; }
+    .readonly-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+    .readonly-item { background: #f9fafb; padding: 12px 15px; border-radius: 8px; border: 1px solid #f3f4f6; }
+    .readonly-item .label { font-size: 0.8rem; color: #6b7280; margin-bottom: 4px; }
+    .readonly-item .value { font-weight: 600; color: #111827; word-break: break-word; }
+    .status-msg { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-weight: 600; display: none; }
+    .status-msg.show { display: block; }
+    .status-msg.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .status-msg.success { background: #d1fae5; color: #047857; border: 1px solid #6ee7b7; }
+  
+    .conditional-panel { display: none; margin-top: 15px; padding: 15px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; }
+    .conditional-panel.show { display: block; }
+    
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>📋 查詢 / 修改報名資料</h1>
+  <p>115學年度公私立大學校院招生研討會議</p>
+  <a href="?page=index" class="back-link" id="backLink">← 返回會議首頁</a>
+</div>
+<div class="container">
+  
+  <div class="card" id="lookupCard">
+    <div class="card-title">身分驗證查詢</div>
+    <div id="lookupError" class="status-msg error"></div>
+    <div class="form-group"><label>身分證字號 <span class="req">*</span></label><input type="text" id="inputIdCard" placeholder="請輸入身分證字號" maxlength="10"></div>
+    <div class="form-group"><label>出生年月日 <span class="req">*</span></label><input type="date" id="inputBirthDate"></div>
+    <button class="btn" onclick="doLookup()">查詢我的報名資料</button>
+  </div>
+
+  <div id="loadingState" class="loading-overlay">
+    <div class="spinner"></div><div style="color: #4b5563; font-weight: 600;">正在處理中...</div>
+  </div>
+
+  <div id="dataSection">
+    <div id="saveStatus" class="status-msg success"></div>
+    <div class="card">
+      <div class="card-title">帳號資訊（唯讀）</div>
+      <div class="readonly-grid" id="readonlyFields"></div>
+    </div>
+    
+    <!-- 基本資料 -->
+    <div class="card">
+      <div class="card-title">個人資料（可修改）</div>
+      <div class="form-row">
+        <div class="form-group"><label>姓名</label><input type="text" id="edit-name"></div>
+        <div class="form-group"><label>生理性別</label><select id="edit-gender"><option value="男">男</option><option value="女">女</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>學校/機關</label><input type="text" id="edit-school"></div>
+        <div class="form-group"><label>服務單位</label><input type="text" id="edit-unit"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>職稱</label><input type="text" id="edit-title"></div>
+        <div class="form-group"><label>電子郵件</label><input type="email" id="edit-email"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>學校地址</label><input type="text" id="edit-address"></div>
+        <div class="form-group"><label>公務人員時數</label><select id="edit-publicService"><option value="否">否</option><option value="是">是</option></select></div>
+      </div>
+    </div>
+
+    <!-- 聯絡資訊 -->
+    <div class="card">
+      <div class="card-title">聯絡資訊</div>
+      <div class="form-row">
+        <div class="form-group"><label>行動電話</label><input type="tel" id="edit-phone"></div>
+        <div class="form-group"><label>辦公室電話</label><input type="text" id="edit-officePhone"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>緊急聯絡人姓名</label><input type="text" id="edit-emergencyContact"></div>
+        <div class="form-group"><label>緊急聯絡人電話</label><input type="tel" id="edit-emergencyPhone"></div>
+      </div>
+    </div>
+
+    <!-- 需求與交通住宿 -->
+    <div class="card">
+      <div class="card-title">飲食住宿與交通安排</div>
+
+      <div class="form-group">
+        <label>飲食習慣<span class="req">*</span></label>
+        <div class="choice-group">
+          <div class="choice-card">
+            <input type="radio" id="diet-meat" name="edit-diet" value="葷">
+            <label class="choice-label" for="diet-meat">葷</label>
+          </div>
+          <div class="choice-card">
+            <input type="radio" id="diet-veg" name="edit-diet" value="素">
+            <label class="choice-label" for="diet-veg">素</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:20px;">
+        <label>用餐需求 (可複選)<span class="req">*</span></label>
+        <div class="vertical-choice-list" id="edit-meals">
+          <div class="choice-card">
+            <input type="checkbox" id="meal-d1-lunch" name="meals" value="8月25日(第一天)午餐(餐盒)">
+            <label class="choice-label" for="meal-d1-lunch">8月25日 (第一天) 午餐 (餐盒)</label>
+          </div>
+          <div class="choice-card">
+            <input type="checkbox" id="meal-d1-dinner" name="meals" value="8月25日(第一天)晚宴(桌菜)">
+            <label class="choice-label" for="meal-d1-dinner">8月25日 (第一天) 晚宴 (義大皇家酒店桌菜)</label>
+          </div>
+          <div class="choice-card">
+            <input type="checkbox" id="meal-d2-lunch" name="meals" value="8月26日(第二天)午餐(餐盒)">
+            <label class="choice-label" for="meal-d2-lunch">8月26日 (第二天) 午餐 (餐盒)</label>
+          </div>
+          <div class="choice-card">
+            <input type="checkbox" id="meal-none" name="meals" value="不用餐">
+            <label class="choice-label" for="meal-none">不用餐 (勾選後將自動取消其他用餐項目)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:20px;">
+        <label>8月25日 (第一天) 住宿安排<span class="req">*</span></label>
+        <div style="font-size: 13px; color: #64748B; margin-bottom: 10px; padding: 10px; background: #F8FAFC; border-left: 3px solid #1F4E79;">
+          ＊住宿地點為義大皇家酒店。房型及大會合約價請參照「住宿資訊」頁面說明。<br>
+          ＊適逢暑假期間，房間量有限。若雙人房房間出現不足時，將依據報名順序協調改為單人房入住。
+        </div>
+        
+        <div class="vertical-choice-list">
+          <div class="choice-card">
+            <input type="radio" id="stay-no" name="edit-stay" value="不住宿">
+            <label class="choice-label" for="stay-no">不住宿</label>
+          </div>
+          <div class="choice-card">
+            <input type="radio" id="stay-yes" name="edit-stay" value="住宿">
+            <label class="choice-label" for="stay-yes">住宿 (義大皇家酒店，由主辦單位統計房型並登錄安排)</label>
+          </div>
+          
+          <div class="conditional-panel" id="lodging-panel">
+            <div class="form-group">
+              <label for="edit-invoice">發票抬頭與統一編號 (公務核銷發票用)</label>
+              <input type="text" id="edit-invoice" placeholder="例如：義守大學 07927743">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>請選擇入住房型：</label>
+              <div class="vertical-choice-list" style="margin-top: 8px;">
+                <div class="choice-card">
+                  <input type="radio" id="edit-room-single" name="edit-roomType" value="單人房(山景客房) $3500/間(含1餐)">
+                  <label class="choice-label" for="edit-room-single" style="font-size: 13.5px;">單人房 (山景客房，一大床) - $3,500/間 (含 1 客早餐)</label>
+                </div>
+                
+                <div class="choice-card">
+                  <input type="radio" id="edit-room-double" name="edit-roomType" value="雙人房(雅致家庭房，兩中床) $4000/間(含2餐)">
+                  <label class="choice-label" for="edit-room-double" style="font-size: 13.5px;">雙人房 (雅致家庭房，兩中床) - $4,000/間 (含 2 客早餐)</label>
+                </div>
+
+                <div class="conditional-panel" id="roommate-panel" style="background: white; border: 1px solid #E5E7EB; padding: 15px;">
+                  <p style="font-size:14px; font-weight: 600; color: var(--primary); margin-bottom:15px; line-height: 1.6;">填寫同房者資訊</p>
+                  <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                      <label for="edit-roommate-school">同房者學校全稱</label>
+                      <input type="text" id="edit-roommate-school" placeholder="請輸入同房者學校">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                      <label for="edit-roommate-name">同房者姓名</label>
+                      <input type="text" id="edit-roommate-name" placeholder="例如：林大同">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="choice-card">
+                  <input type="radio" id="edit-room-double-auto" name="edit-roomType" value="雙人房(由大會安排)">
+                  <label class="choice-label" for="edit-room-double-auto" style="font-size: 13.5px;">雙人房 (雅致家庭房) - 尚無同房者，由大會安排</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-group" style="margin-top:20px;">
+        <label>8月25日 (第一天) 抵達會場交通方式<span class="req">*</span></label>
+        <div class="vertical-choice-list">
+          <div class="choice-card">
+            <input type="radio" id="d1-traffic-car" name="edit-day1Traffic" value="交通自理">
+            <label class="choice-label" for="d1-traffic-car">交通自理</label>
+          </div>
+          <div class="choice-card">
+            <input type="radio" id="d1-traffic-shuttle" name="edit-day1Traffic" value="搭乘高鐵站接駁車至會場">
+            <label class="choice-label" for="d1-traffic-shuttle">搭乘高鐵站接駁車至會場 (高鐵左營站 11:20 準時發車)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:20px;">
+        <label>8月25日 (第一天) 會議結束後交通安排<span class="req">*</span></label>
+        <div class="vertical-choice-list">
+          <div class="choice-card" id="card-d1-after-dinner">
+            <input type="radio" id="d1-after-dinner" name="edit-day1After" value="參與晚宴(參與晚宴者可搭乘接駁專車或自行前往義大皇家酒店，晚宴結束後未安排住宿者，請自行安排返程交通)">
+            <label class="choice-label" for="d1-after-dinner">參與晚宴 (搭乘接駁車或自行前往義大皇家酒店)</label>
+          </div>
+          <div class="choice-card" id="card-d1-after-shuttle">
+            <input type="radio" id="d1-after-shuttle" name="edit-day1After" value="不參與晚宴，搭接駁車至高鐵左營站">
+            <label class="choice-label" for="d1-after-shuttle">不參與晚宴（搭乘接駁車前往高鐵左營站，18:10發車）</label>
+          </div>
+          <div class="choice-card" id="card-d1-after-self">
+            <input type="radio" id="d1-after-self" name="edit-day1After" value="不參與晚宴，交通自理">
+            <label class="choice-label" for="d1-after-self">不參與晚宴（交通自理）</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" id="edit-d2TrafficContainer" style="margin-top:20px;">
+        <label>8月26日 (第二天) 抵達會場交通方式<span class="req">*</span></label>
+        <div class="vertical-choice-list">
+          <div class="choice-card">
+            <input type="radio" id="d2-traffic-car" name="edit-day2Traffic" value="交通自理">
+            <label class="choice-label" for="d2-traffic-car">交通自理</label>
+          </div>
+          <div class="choice-card">
+            <input type="radio" id="d2-traffic-shuttle" name="edit-day2Traffic" value="搭乘高鐵接駁車至會場">
+            <label class="choice-label" for="d2-traffic-shuttle">搭乘高鐵站接駁車至會場 (高鐵左營站 8:30 準時發車)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:20px;">
+        <label>8月26日 (第二天) 參訪意願及賦歸交通工具調查<span class="req">*</span></label>
+        <div class="vertical-choice-list">
+          <div class="choice-card">
+            <input type="radio" id="dep-self" name="edit-departure" value="賦歸 (交通自理)">
+            <label class="choice-label" for="dep-self">賦歸 (交通自理)</label>
+          </div>
+          <div class="choice-card">
+            <input type="radio" id="dep-shuttle" name="edit-departure" value="賦歸 (搭接駁車至左營高鐵站，12:30發車)">
+            <label class="choice-label" for="dep-shuttle">賦歸 (搭乘接駁車至高鐵左營站，12:30 發車）</label>
+          </div>
+          <div class="choice-card" id="tour-a-card">
+            <input type="radio" id="dep-tour-a" name="edit-departure" value="參訪路線A美濃(原車往高鐵)">
+            <label class="choice-label" for="dep-tour-a">參訪路線A：美濃文化之旅 (參訪結束後原車送至高鐵左營站) <span id="tour-a-quota-badge" style="display:inline-block; margin-left:8px; padding:2px 8px; font-size:12px; border-radius:12px;"></span></label>
+          </div>
+          <div class="choice-card">
+            <input type="radio" id="dep-tour-b" name="edit-departure" value="參訪路線B佛光山(原車往高鐵)">
+            <label class="choice-label" for="dep-tour-b">參訪路線B：佛光山佛陀紀念館 (參訪結束後原車送至高鐵左營站)</label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: 15px; margin-bottom: 50px;">
+      <button class="btn" id="btnSave" onclick="doSave()" style="flex: 2;">儲存修改</button>
+      <button class="btn" onclick="resetToLookup()" style="flex: 1; background: #9ca3af;">取消</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  var isGAS = (typeof google !== 'undefined' && google.script && google.script.run);
+
+    var TOUR_A_MAX = 40;
+    var tourACount = null;
+
+    function checkTourAQuota() {
+      var badge = document.getElementById('tour-a-quota-badge');
+      if (!badge) return;
+      badge.textContent = '名額查詢中...';
+      badge.style.background = '#dbeafe';
+      badge.style.color = '#1e40af';
+
+      var cbName = 'onTourAQuotaResult';
+      window[cbName] = function(response) {
+        if (response && typeof response.tourACount === 'number') {
+          tourACount = response.tourACount;
+        } else {
+          tourACount = 0;
+        }
+        updateTourABadge();
+        var s = document.getElementById('quota-script');
+        if (s) s.parentNode.removeChild(s);
+      };
+
+      var url = GAS_WEB_APP_URL + '?callback=' + cbName + '&action=getTourACount&_t=' + new Date().getTime();
+      var script = document.createElement('script');
+      script.id = 'quota-script';
+      script.src = url;
+      script.onerror = function() {
+        badge.textContent = '限 40 人';
+        badge.style.background = '#fef3c7';
+        badge.style.color = '#92400e';
+      };
+      document.body.appendChild(script);
+    }
+    function updateTourABadge() {
+      var badge = document.getElementById('tour-a-quota-badge');
+      var radio = document.getElementById('dep-tour-a');
+      var card = document.getElementById('tour-a-card');
+      if (!badge) return;
+
+      var remaining = TOUR_A_MAX - (tourACount || 0);
+      if (remaining < 0) remaining = 0;
+
+      if (radio && radio.checked) {
+         badge.textContent = '✅ 您已報名此路線';
+         badge.style.background = '#dcfce7';
+         badge.style.color = '#166534';
+         radio.disabled = false;
+         if(card) { card.style.opacity = '1'; card.style.cursor = 'pointer'; }
+         return;
+      }
+
+      if (remaining <= 0) {
+        badge.textContent = '🚫 已額滿';
+        badge.style.background = '#fee2e2';
+        badge.style.color = '#dc2626';
+        if (radio) { radio.disabled = true; }
+        if (card) { card.style.opacity = '0.5'; card.style.cursor = 'not-allowed'; }
+      } else if (remaining <= 10) {
+        badge.textContent = '🔥 倒數 ' + remaining + ' 名';
+        badge.style.background = '#fef3c7';
+        badge.style.color = '#92400e';
+        if (radio) { radio.disabled = false; }
+        if (card) { card.style.opacity = '1'; card.style.cursor = 'pointer'; }
+      } else {
+        badge.textContent = '剩餘 ' + remaining + ' 名';
+        badge.style.background = '#dcfce7';
+        badge.style.color = '#166534';
+        if (radio) { radio.disabled = false; }
+        if (card) { card.style.opacity = '1'; card.style.cursor = 'pointer'; }
+      }
+    }
+
+  var GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbywpKJ91JW-HCjQ_cwL-HaoqdE08h_9JuXXqR-rxJsIwJyTWcH_o8vSVn9kBFDN9U8s/exec';
+  var currentIdCard = '';
+  document.addEventListener('DOMContentLoaded', function() {
+    checkTourAQuota();
+    
+    var urlParams = new URLSearchParams(window.location.search);
+    var uid = urlParams.get('uid');
+    if (uid) {
+      document.getElementById('lookupCard').style.display = 'none';
+      doPreview(uid);
+    }
+  });
+  var currentBirthDate = '';
+  if (!isGAS) { document.getElementById('backLink').href = 'index.html'; }
+
+  function showError(msg) { var el = document.getElementById('lookupError'); el.textContent = msg; el.classList.add('show'); }
+  function hideError() { document.getElementById('lookupError').classList.remove('show'); }
+  function showSaveStatus(msg, isError) {
+    var el = document.getElementById('saveStatus');
+    el.textContent = msg; el.className = 'status-msg show ' + (isError ? 'error' : 'success');
+    setTimeout(function() { el.classList.remove('show'); }, 5000);
+  }
+
+  
+  function doPreview(uid) {
+    document.getElementById('loadingState').classList.add('show');
+    if (isGAS) {
+      google.script.run.withSuccessHandler(onPreviewResult).withFailureHandler(function(e){onPreviewResult({success:false,message:e.message})}).previewMyData(uid);
+    } else {
+      var url = GAS_WEB_APP_URL + '?callback=onPreviewCallback&action=previewMyData&uid=' + encodeURIComponent(uid);
+      window.onPreviewCallback = onPreviewResult;
+      var s = document.createElement('script'); s.src = url; s.onerror = function() { onPreviewResult({success:false, message:'連線失敗'}) }; document.body.appendChild(s);
+    }
+  }
+
+  function onPreviewResult(result) {
+    document.getElementById('loadingState').classList.remove('show');
+    if (!result.success) { 
+      document.getElementById('lookupCard').style.display = 'block'; 
+      return showError(result.message || '查詢失敗'); 
+    }
+    showPreviewUI(result.data);
+  }
+
+  function showPreviewUI(data) {
+    document.getElementById('dataSection').style.display = 'none';
+    document.getElementById('lookupCard').style.display = 'none';
+    
+    var existingPreview = document.getElementById('previewCard');
+    if (existingPreview) existingPreview.remove();
+
+    var previewHtml = `
+      <div class="card" id="previewCard" style="max-width: 600px; margin: 0 auto; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+        <div class="card-title" style="justify-content: center; font-size: 1.4rem;">🎉 報名資料總覽</div>
+        <p style="text-align: center; color: #6b7280; font-size: 0.95rem; margin-bottom: 25px;">以下是您的專屬行程安排</p>
+        
+        <div class="readonly-grid" style="grid-template-columns: 1fr; gap: 12px;">
+          <div class="readonly-item"><div class="label">姓名</div><div class="value" style="font-size: 1.1rem; color: var(--primary);">${data['姓名']}</div></div>
+          <div class="readonly-item"><div class="label">學校/機關</div><div class="value">${data['學校機關名稱']}</div></div>
+          <div class="readonly-item"><div class="label">用餐需求</div><div class="value">${data['用餐需求']}</div></div>
+          <div class="readonly-item"><div class="label">第一天住宿</div><div class="value">${data['第一天住宿安排']}</div></div>
+          <div class="readonly-item"><div class="label">第一天抵達交通</div><div class="value">${data['第一天抵達交通方式']}</div></div>
+          <div class="readonly-item"><div class="label">第一天結束安排</div><div class="value">${data['第一天會議結束安排']}</div></div>
+          <div class="readonly-item"><div class="label">第二天抵達交通</div><div class="value">${data['第二天抵達交通方式']}</div></div>
+          <div class="readonly-item"><div class="label">第二天離校/參訪</div><div class="value" style="color: #047857;">${data['第二天離校/參訪離校']}</div></div>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+          <button class="btn" onclick="window.location.href='?page=mydata'" style="width: auto; padding: 12px 30px; background: #4b5563;">重新登入以修改資料</button>
+        </div>
+      </div>
+    `;
+    
+    var container = document.createElement('div');
+    container.innerHTML = previewHtml;
+    document.querySelector('.container').appendChild(container.firstElementChild);
+  }
+
+  function doLookup() {
+    hideError();
+    var idCard = document.getElementById('inputIdCard').value.trim().toUpperCase();
+    var birthDate = document.getElementById('inputBirthDate').value;
+    if (!idCard) return showError('請輸入身分證字號');
+    if (!birthDate) return showError('請選擇出生年月日');
+    currentIdCard = idCard; currentBirthDate = birthDate;
+    document.getElementById('lookupCard').style.display = 'none';
+    document.getElementById('loadingState').classList.add('show');
+    
+    if (isGAS) {
+      google.script.run.withSuccessHandler(onLookupResult).withFailureHandler(function(e){onLookupResult({success:false,message:e.message})}).lookupMyData(idCard, birthDate);
+    } else {
+      var url = GAS_WEB_APP_URL + '?callback=onLookupCallback&action=lookupMyData&idCard=' + encodeURIComponent(idCard) + '&birthDate=' + encodeURIComponent(birthDate);
+      window.onLookupCallback = onLookupResult;
+      var s = document.createElement('script'); s.src = url; s.onerror = function() { onLookupResult({success:false, message:'連線失敗'}) }; document.body.appendChild(s);
+    }
+  }
+
+  function onLookupResult(result) {
+    document.getElementById('loadingState').classList.remove('show');
+    if (!result.success) { document.getElementById('lookupCard').style.display = 'block'; return showError(result.message || '查詢失敗'); }
+    populateData(result.data);
+    document.getElementById('dataSection').classList.add('show');
+  }
+
+  function populateData(data) {
+    var readonlyMap = [{key:'身分證字號',label:'身分證字號'},{key:'出生年月日',label:'出生年月日'},{key:'UID',label:'報名序號'},{key:'報到狀態',label:'報到狀態'}];
+    var html = '';
+    readonlyMap.forEach(function(item) { html += '<div class="readonly-item"><div class="label">' + item.label + '</div><div class="value">' + (data[item.key]||'—') + '</div></div>'; });
+    document.getElementById('readonlyFields').innerHTML = html;
+
+    document.getElementById('edit-name').value = data['姓名'] || '';
+    document.getElementById('edit-gender').value = data['生理性別'] || '男';
+    document.getElementById('edit-school').value = data['學校機關名稱'] || '';
+    document.getElementById('edit-unit').value = data['服務單位'] || '';
+    document.getElementById('edit-title').value = data['職稱'] || '';
+    document.getElementById('edit-email').value = data['電子郵件'] || '';
+    document.getElementById('edit-address').value = data['學校地址'] || '';
+    document.getElementById('edit-publicService').value = data['公務人員時數'] || '否';
+    document.getElementById('edit-phone').value = data['行動電話'] || '';
+    document.getElementById('edit-officePhone').value = data['辦公室電話'] || '';
+    document.getElementById('edit-emergencyContact').value = data['緊急聯絡人姓名'] || '';
+    document.getElementById('edit-emergencyPhone').value = data['緊急聯絡人電話'] || '';
+
+    // Radios/Checkboxes matching
+    var checkRadio = function(name, val) {
+      document.querySelectorAll('input[name="'+name+'"]').forEach(function(r){ 
+        if (val && val.indexOf(r.value) !== -1 || r.value === val) r.checked = true; 
+        else r.checked = false;
+      });
+    };
+    checkRadio('edit-diet', data['飲食習慣']);
+    
+    // Parse stay detail
+    var stayStr = data['第一天住宿安排'] || '不住宿';
+    if (stayStr.startsWith('不住宿')) {
+      document.getElementById('stay-no').checked = true;
+      document.getElementById('lodging-panel').classList.remove('show');
+      if(document.getElementById('edit-d2TrafficContainer')) document.getElementById('edit-d2TrafficContainer').style.display = 'block';
+    } else {
+      document.getElementById('stay-yes').checked = true;
+      document.getElementById('lodging-panel').classList.add('show');
+      if(document.getElementById('edit-d2TrafficContainer')) document.getElementById('edit-d2TrafficContainer').style.display = 'none';
+      
+      
+      // Debug: show raw string
+      document.getElementById('edit-invoice').placeholder = "例如：義守大學 07927743";
+      
+      // Parse invoice and roomType
+
+      var m = stayStr.match(/發票(抬頭與)?統編:\s*([^;]+);/);
+      if(m && m.length > 2) { document.getElementById('edit-invoice').value = m[2].trim(); } else if (m) { document.getElementById('edit-invoice').value = m[1].trim(); }
+      
+      
+      var rm = stayStr.match(/房型:\s*([^;]+)/);
+      if(rm) {
+        var rtVal = rm[1].trim();
+        document.querySelectorAll('input[name="edit-roomType"]').forEach(function(r) {
+          var v1 = r.value.replace(/\s+/g, '');
+          var v2 = rtVal.replace(/\s+/g, '');
+          if(v1 === v2 || v1.indexOf(v2) !== -1 || v2.indexOf(v1) !== -1) {
+            r.checked = true;
+            r.dispatchEvent(new Event('change'));
+          }
+        });
+        if(rtVal.includes('雙人房(雅致家庭房，兩中床)')) {
+          document.getElementById('roommate-panel').classList.add('show');
+          
+          
+          var cm = stayStr.match(/同房(?:者)?[:：]\s*([^;)]+)/);
+          if(cm) {
+            var parts = cm[1].split(/[-－–—─_~]/);
+            if(parts.length >= 2) {
+              document.getElementById('edit-roommate-school').value = parts[0].trim();
+              document.getElementById('edit-roommate-name').value = parts.slice(1).join('-').trim();
+            } else {
+              document.getElementById('edit-roommate-school').value = cm[1].trim();
+            }
+          } else {
+            document.getElementById('edit-roommate-school').value = "Debug: " + stayStr;
+          }
+
+
+        } else {
+          document.getElementById('roommate-panel').classList.remove('show');
+        }
+      }
+    }
+
+    checkRadio('edit-day1Traffic', data['第一天抵達交通方式']);
+    checkRadio('edit-day1After', data['第一天會議結束安排']);
+    checkRadio('edit-day2Traffic', data['第二天抵達交通方式']);
+    checkRadio('edit-departure', data['第二天離校/參訪離校']);
+    
+    // Meals checkboxes
+    var mealsStr = data['用餐需求'] || '';
+    document.getElementById('meal-d1-lunch').checked = (mealsStr.indexOf('第一天)午餐') !== -1 || (mealsStr.indexOf('8月25') !== -1 && mealsStr.indexOf('午餐') !== -1));
+    document.getElementById('meal-d1-dinner').checked = (mealsStr.indexOf('晚宴') !== -1);
+    document.getElementById('meal-d2-lunch').checked = (mealsStr.indexOf('第二天)午餐') !== -1 || (mealsStr.indexOf('8月26') !== -1 && mealsStr.indexOf('午餐') !== -1));
+    document.getElementById('meal-none').checked = (mealsStr.indexOf('不用餐') !== -1);
+    toggleDay1After();
+    updateTourABadge();
+  }
+
+  function doSave() {
+    var btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = '儲存中...';
+    var meals = []; document.querySelectorAll('#edit-meals input[type="checkbox"]:checked').forEach(function(cb) { meals.push(cb.value); });
+    
+      var stayFinal = '不住宿';
+      if(document.getElementById('stay-yes').checked) {
+        var inv = document.getElementById('edit-invoice').value.trim() || '無';
+        var rtInput = document.querySelector('input[name="edit-roomType"]:checked');
+        var rt = rtInput ? rtInput.value : '';
+        stayFinal = '住宿 (發票抬頭與統編: ' + inv + '; 房型: ' + rt;
+        if(rtInput && rtInput.id === 'edit-room-double') {
+          var rs = document.getElementById('edit-roommate-school').value.trim();
+          var rn = document.getElementById('edit-roommate-name').value.trim();
+          if(rs || rn) stayFinal += '; 同房者: ' + rs + ' - ' + rn;
+        }
+        stayFinal += ')';
+      }
+
+    var payload = {
+      '姓名': document.getElementById('edit-name').value.trim(),
+      '生理性別': document.getElementById('edit-gender').value,
+      '學校機關名稱': document.getElementById('edit-school').value.trim(),
+      '服務單位': document.getElementById('edit-unit').value.trim(),
+      '職稱': document.getElementById('edit-title').value.trim(),
+      '電子郵件': document.getElementById('edit-email').value.trim(),
+      '學校地址': document.getElementById('edit-address').value.trim(),
+      '公務人員時數': document.getElementById('edit-publicService').value,
+      '行動電話': document.getElementById('edit-phone').value.trim(),
+      '辦公室電話': document.getElementById('edit-officePhone').value.trim(),
+      '緊急聯絡人姓名': document.getElementById('edit-emergencyContact').value.trim(),
+      '緊急聯絡人電話': document.getElementById('edit-emergencyPhone').value.trim(),
+      '第一天住宿安排': stayFinal,
+      '第二天離校/參訪離校': (document.querySelector('input[name="edit-departure"]:checked')||{}).value || '',
+      '用餐需求': meals.join(', '),
+      '飲食習慣': (document.querySelector('input[name="edit-diet"]:checked')||{}).value || '',
+      '第一天抵達交通方式': (document.querySelector('input[name="edit-day1Traffic"]:checked')||{}).value || '',
+      '第一天會議結束安排': (document.querySelector('input[name="edit-day1After"]:checked')||{}).value || '',
+      '第二天抵達交通方式': document.getElementById('stay-yes').checked ? '已勾選住宿，免填' : ((document.querySelector('input[name="edit-day2Traffic"]:checked')||{}).value || '')
+    };
+
+    if (isGAS) {
+      google.script.run.withSuccessHandler(onSaveResult).withFailureHandler(function(e){onSaveResult({success:false,message:e.message})}).updateMyData(currentIdCard, currentBirthDate, payload);
+    } else {
+      var url = GAS_WEB_APP_URL + '?callback=onSaveCallback&action=updateMyData&idCard=' + encodeURIComponent(currentIdCard) + '&birthDate=' + encodeURIComponent(currentBirthDate) + '&payload=' + encodeURIComponent(JSON.stringify(payload));
+      window.onSaveCallback = onSaveResult;
+      var s = document.createElement('script'); s.src = url; s.onerror = function(){onSaveResult({success:false,message:'連線失敗'})}; document.body.appendChild(s);
+    }
+  }
+
+  function onSaveResult(result) {
+    var btn = document.getElementById('btnSave'); btn.disabled = false; btn.innerHTML = '儲存修改';
+    if (result.success) { showSaveStatus('✓ ' + result.message, false); window.scrollTo({top: document.getElementById('dataSection').offsetTop, behavior: 'smooth'}); } 
+    else { showSaveStatus('✗ ' + (result.message||'儲存失敗'), true); }
+  }
+
+  function resetToLookup() {
+    document.getElementById('dataSection').classList.remove('show');
+    document.getElementById('lookupCard').style.display = 'block';
+    document.getElementById('inputIdCard').value = '';
+    document.getElementById('inputBirthDate').value = '';
+  }
+  
+  
+  // Stay toggle logic
+  document.getElementById('stay-no').addEventListener('change', function(){
+    if(this.checked) {
+      document.getElementById('lodging-panel').classList.remove('show');
+      if(document.getElementById('edit-d2TrafficContainer')) document.getElementById('edit-d2TrafficContainer').style.display = 'block';
+    }
+  });
+  document.getElementById('stay-yes').addEventListener('change', function(){
+    if(this.checked) {
+      document.getElementById('lodging-panel').classList.add('show');
+      if(document.getElementById('edit-d2TrafficContainer')) document.getElementById('edit-d2TrafficContainer').style.display = 'none';
+      document.querySelectorAll('input[name="edit-day2Traffic"]').forEach(function(cb){ cb.checked = false; });
+    }
+  });
+  
+  
+  document.querySelectorAll('input[name="edit-departure"]').forEach(function(r) {
+    r.addEventListener('change', updateTourABadge);
+  });
+
+  // RoomType toggle logic
+  document.querySelectorAll('input[name="edit-roomType"]').forEach(function(r) {
+    r.addEventListener('change', function() {
+      if(this.id === 'edit-room-double') document.getElementById('roommate-panel').classList.add('show');
+      else document.getElementById('roommate-panel').classList.remove('show');
+    });
+  });
+
+  function toggleDay1After() {
+    const dinnerChecked = document.getElementById('meal-d1-dinner').checked;
+    const cardDinner = document.getElementById('card-d1-after-dinner');
+    const cardShuttle = document.getElementById('card-d1-after-shuttle');
+    const cardSelf = document.getElementById('card-d1-after-self');
+    const rDinner = document.getElementById('d1-after-dinner');
+    const rShuttle = document.getElementById('d1-after-shuttle');
+    const rSelf = document.getElementById('d1-after-self');
+
+    if(dinnerChecked) {
+      if(cardDinner) cardDinner.style.display = '';
+      if(cardShuttle) cardShuttle.style.display = 'none';
+      if(cardSelf) cardSelf.style.display = 'none';
+      if(rDinner && !rDinner.checked) rDinner.checked = true;
+      if(rShuttle && rShuttle.checked) rShuttle.checked = false;
+      if(rSelf && rSelf.checked) rSelf.checked = false;
+    } else {
+      if(cardDinner) cardDinner.style.display = 'none';
+      if(cardShuttle) cardShuttle.style.display = '';
+      if(cardSelf) cardSelf.style.display = '';
+      if(rDinner && rDinner.checked) rDinner.checked = false;
+    }
+  }
+
+  // checkbox auto logic
+  document.getElementById('meal-none').addEventListener('change', function() {
+    if(this.checked) {
+      document.getElementById('meal-d1-lunch').checked = false;
+      document.getElementById('meal-d1-dinner').checked = false;
+      document.getElementById('meal-d2-lunch').checked = false;
+    }
+    toggleDay1After();
+    updateTourABadge();
+  });
+  ['meal-d1-lunch', 'meal-d1-dinner', 'meal-d2-lunch'].forEach(id => {
+    document.getElementById(id).addEventListener('change', function() {
+      if(this.checked) document.getElementById('meal-none').checked = false;
+      if(id === 'meal-d1-dinner') toggleDay1After();
+    });
+  });
+</script>
+</body>
+</html>
