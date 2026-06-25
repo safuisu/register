@@ -396,6 +396,23 @@
       document.getElementById('lookupCard').style.display = 'none';
       doPreview(uid);
     }
+
+    // ===== 修改截止前端檢查 (7/16 00:00) =====
+    var deadline = new Date('2026-07-16T00:00:00+08:00');
+    if (new Date() >= deadline && !uid) {
+      var card = document.getElementById('lookupCard');
+      if (card) {
+        card.innerHTML =
+          '<h2 style="color:#2563EB;margin-bottom:20px;">查詢報名資料</h2>' +
+          '<div style="text-align:center;padding:40px 20px;">' +
+            '<div style="font-size:50px;margin-bottom:15px;">🚫</div>' +
+            '<h3 style="color:#dc2626;margin-bottom:10px;">修改功能已截止</h3>' +
+            '<p style="color:#4b5563;font-size:15px;">修改資料已於 7 月 15 日截止。<br>如需協助，請洽詢主辦單位。</p>' +
+            '<div style="margin-top:20px;"><a href="index.html" style="color:#2563EB;">← 返回會議首頁</a></div>' +
+          '</div>';
+      }
+    }
+    // =========================================
   });
   var currentBirthDate = '';
   if (!isGAS) { document.getElementById('backLink').href = 'index.html'; }
@@ -464,7 +481,7 @@
         </div>
         
         <div style="margin-top: 30px; text-align: center;">
-          <button class="btn" onclick="window.location.href='?page=mydata'" style="width: auto; padding: 12px 30px; background: #4b5563;">重新登入以修改資料</button>
+          ${new Date() >= new Date('2026-07-16T00:00:00+08:00') ? '' : '<button class="btn" onclick="window.location.href=\'?page=mydata\'" style="width: auto; padding: 12px 30px; background: #4b5563;">重新登入以修改資料</button>'}
         </div>
       </div>
     `;
