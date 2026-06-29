@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大會專屬座位查詢</title>
+  <style>
+    :root {
+      --primary: #2563EB;
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --text: #1E293B;
+      --text-sub: #64748B;
+      --border: #E2E8F0;
+      --highlight: #F59E0B;
+    }
+    body {
+      margin: 0; padding: 20px 10px; font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+    }
+    .header {
+      text-align: center; margin-bottom: 30px;
+    }
+    .header h1 {
+      color: var(--primary); margin: 0 0 10px 0; font-size: 24px;
+    }
+    .header p {
+      color: var(--text-sub); margin: 0; font-size: 14px;
+    }
+    
+    .map-container {
+      background: var(--card); padding: 20px; border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 1000px;
+      margin: 0 auto; /* 置中 */
+      overflow-x: auto; box-sizing: border-box; -webkit-overflow-scrolling: touch;
+    }
+    
+    /* 讓舞台跟座位圖可以一起被水平捲動，不會排版跑掉 */
+    .scroll-wrapper {
+      display: inline-block; min-width: 100%; text-align: center;
+    }
+
+    .stage {
+      background: #475569; color: white; text-align: center; padding: 12px;
+      font-weight: bold; border-radius: 8px; margin-bottom: 25px; letter-spacing: 5px;
+      font-size: 16px; width: 100%; box-sizing: border-box;
+    }
+    
+    .seat-grid {
+      display: inline-grid; gap: 6px; padding-bottom: 20px;
+    }
+    
+    .seat {
+      background: #F1F5F9; border: 1px solid var(--border); border-radius: 6px;
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    
+    /* 其他人的座位 (模糊處理保護隱私) */
+    .seat.occupied {
+      background: #E2E8F0; border-color: #CBD5E1; color: transparent;
+    }
+    
+    /* 走道/無效座位 (隱形) */
+    .seat.blocked {
+      background: transparent; border-color: transparent; color: transparent; pointer-events: none;
+    }
+    
+    /* 自己的座位 (醒目動畫) */
+    .seat.my-seat {
+      background: var(--primary); border-color: #1D4ED8; color: white;
+      font-weight: bold; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
+      animation: pulse 1.5s infinite; z-index: 10;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+      50% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+    
+    #loading {
+      text-align: center; padding: 50px; font-size: 18px; color: var(--text-sub);
+    }
+    
+    .legend {
+      display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
+      margin-top: 10px; border-top: 1px solid var(--border); padding-top: 20px;
+      font-size: 13px; color: var(--text-sub);
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .legend-box {
+      width: 20px; height: 20px; border-radius: 4px; border: 1px solid var(--border);
+    }
+    
+    .seat-info-card {
+      margin-top: 30px; background: #EFF6FF; border: 1px solid #BFDBFE;
+      padding: 20px; border-radius: 12px; text-align: center;
+      display: none; width: 100%; max-width: 400px;
+    }
+    .seat-info-card h3 { margin: 0 0 10px 0; color: #1E3A8A; }
+    .seat-info-card .number { font-size: 32px; font-weight: 900; color: var(--primary); letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>專屬座位查詢</h1>
+  <p>大會座位配置圖</p>
+</div>
+
+<div id="loading">讀取您的座位資訊中，請稍候...</div>
+
+<div id="errorMsg" style="display:none; color: var(--danger); font-size: 18px; font-weight: bold; text-align: center; padding: 60px 40px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; max-width: 420px; margin: 60px auto;"></div>
+
+
+<div class="map-container" id="mapContainer" style="display:none;">
+  <div class="scroll-wrapper">
+    <div class="stage">講台 / 舞台</div>
+    <div class="seat-grid" id="seatGrid">
+      <!-- 座位由 JS 產生 -->
+    </div>
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item"><div class="legend-box" style="background: var(--primary);"></div> 您的座位</div>
+    <div class="legend-item"><div class="legend-box" style="background: #E2E8F0;"></div> 已安排座位</div>
+    <div class="legend-item"><div class="legend-box" style="background: #F1F5F9;"></div> 空位</div>
+  </div>
+</div>
+
+<script>
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwb1O2nBCzYA-SWvICOUIR9RRcj3NMwlUNH3dd5_aJ72gYfdwFP16D_Dz_7q_QL-TVT/exec";
+
+function callAPI(action, params, onSuccess, onError) {
+  let url = GAS_WEB_APP_URL + "?action=" + action;
+  for (let k in params) url += "&" + k + "=" + encodeURIComponent(params[k]);
+  const cb = 'jsonp_' + Math.round(100000 * Math.random());
+  url += "&callback=" + cb;
+  
+  window[cb] = function(data) {
+    delete window[cb];
+    document.head.removeChild(script);
+    if(data.error || data.success === false) { if(onError) onError(data.error || data.message); }
+    else { if(onSuccess) onSuccess(data); }
+  };
+  const script = document.createElement('script');
+  script.src = url;
+  script.onerror = function() {
+    delete window[cb];
+    document.head.removeChild(script);
+    if(onError) onError('連線失敗');
+  };
+  document.head.appendChild(script);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const uid = urlParams.get('uid');
+  
+  if (!uid) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('errorMsg').innerText = "❌ 查無 UID，無法顯示座位";
+    document.getElementById('errorMsg').style.display = 'block';
+    return;
+  }
+  
+  callAPI('getSeatByUid', { uid: uid }, function(res) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('mapContainer').style.display = 'block';
+
+    const config = res.config || { rows: 10, cols: 20, blocked: [] };
+    if (!config.blocked) config.blocked = [];
+    
+    renderSeats(res.mySeatId, res.occupiedSeats || [], config);
+    
+    // 將畫面捲動至置中
+    setTimeout(() => {
+      const mySeatEl = document.getElementById(res.mySeatId);
+      if (mySeatEl) {
+        mySeatEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      }
+    }, 500);
+    
+  }, function(err) {
+    document.getElementById('loading').style.display = 'none';
+    var errEl = document.getElementById('errorMsg');
+    if (err.indexOf('查無') !== -1 || err.indexOf('尚未') !== -1) {
+      errEl.innerHTML = '<div style="font-size: 48px; margin-bottom: 15px;">💺</div>' +
+        '<div style="font-size: 18px; font-weight: 700; color: #475569; margin-bottom: 8px;">座位尚未安排</div>' +
+        '<div style="font-size: 14px; color: #94A3B8;">主辦單位正在規劃座位中，敬請稍候。</div>';
+    } else {
+      errEl.innerText = "❌ " + err;
+    }
+    errEl.style.display = 'block';
+  });
+});
+
+function renderSeats(mySeatId, occupiedSeats, config) {
+  const grid = document.getElementById('seatGrid');
+  grid.innerHTML = '';
+  // 手機版固定座位為 32px，使用 inline-grid 動態擴展，不使用 1fr 避免被壓縮
+  grid.style.gridTemplateColumns = `repeat(${config.cols}, 32px)`;
+  
+  for (let r = 1; r <= config.rows; r++) {
+    for (let c = 1; c <= config.cols; c++) {
+      const seatId = 'R' + r + '-C' + c;
+      const seatDiv = document.createElement('div');
+      seatDiv.className = 'seat';
+      seatDiv.id = seatId;
+      seatDiv.title = "第 " + r + " 排，第 " + c + " 號";
+      
+      if (config.blocked.indexOf(seatId) !== -1) {
+        seatDiv.className = 'seat blocked';
+      } else if (seatId === mySeatId) {
+        seatDiv.className = 'seat my-seat';
+        seatDiv.innerHTML = '<span style="font-size: 14px;">📍</span>';
+      } else if (occupiedSeats.indexOf(seatId) !== -1) {
+        seatDiv.className = 'seat occupied';
+      }
+      
+      grid.appendChild(seatDiv);
+    }
+  }
+}
+</script>
+</body>
+</html>

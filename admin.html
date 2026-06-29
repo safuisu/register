@@ -284,6 +284,84 @@
     @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
     @keyframes toastOut { from { opacity:1; } to { opacity:0; } }
 
+    /* ===== 座位管理頁面 ===== */
+    .seating-layout { display: flex; gap: 0; height: calc(100vh - 80px); }
+    .seating-sidebar {
+      width: 280px; min-width: 280px; background: var(--bg-content);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+      border-radius: 14px 0 0 14px; overflow: hidden;
+    }
+    .seating-sidebar-header {
+      padding: 16px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .seating-sidebar-header h3 { margin: 0; font-size: 15px; }
+    .seating-unassigned-list {
+      flex: 1; overflow-y: auto; padding: 10px; background: var(--bg);
+    }
+    .seating-user-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; margin-bottom: 6px; cursor: grab; font-size: 13px;
+      color: var(--text); transition: all 0.15s;
+    }
+    .seating-user-item:hover { border-color: var(--primary); background: var(--card-hover); }
+    .seating-user-item:active { cursor: grabbing; }
+
+    .seating-content {
+      flex: 1; padding: 20px; display: flex; flex-direction: column;
+      overflow-y: auto; overflow-x: auto;
+    }
+    .seating-toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+    }
+    .seating-settings {
+      background: var(--card); padding: 12px 16px; border-radius: 10px;
+      border: 1px solid var(--border); display: flex; gap: 12px;
+      align-items: center; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .seating-settings input[type="number"] {
+      width: 55px; padding: 6px; border: 1px solid var(--border); border-radius: 6px;
+      text-align: center; font-size: 14px; background: var(--bg); color: var(--text);
+    }
+    .seating-settings label { font-size: 13px; font-weight: 600; color: var(--text-sub); }
+    .seating-stage {
+      background: #475569; color: white; text-align: center; padding: 12px;
+      font-weight: bold; border-radius: 8px; margin-bottom: 20px; letter-spacing: 5px;
+      font-size: 16px; width: max-content; min-width: 100%; box-sizing: border-box;
+    }
+    .seating-grid {
+      display: grid; gap: 5px; width: max-content; min-width: 100%; padding-bottom: 30px;
+    }
+    .s-seat {
+      background: var(--card); border: 2px solid var(--border); border-radius: 6px;
+      height: 42px; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; cursor: pointer; transition: all 0.15s; position: relative;
+      text-align: center; overflow: hidden; padding: 2px; color: var(--text-sub);
+    }
+    .s-seat.s-empty:hover { border-color: var(--primary); background: rgba(59,130,246,0.1); }
+    .s-seat.s-occupied {
+      background: rgba(59,130,246,0.15); border-color: var(--primary);
+      color: var(--text); font-weight: 700;
+    }
+    .s-seat.s-dragover { background: rgba(245,158,11,0.2); border-color: var(--warning); }
+    .s-seat.s-blocked { background: transparent; border-color: transparent; color: transparent; pointer-events: none; }
+    .s-block-mode .s-seat { pointer-events: auto !important; }
+    .s-block-mode .s-seat.s-blocked { background: rgba(239,68,68,0.15); border-color: var(--danger); color: var(--danger); }
+    .s-block-mode .s-seat.s-empty:hover { background: rgba(239,68,68,0.15); border-color: var(--danger); }
+    .s-block-mode .s-seat.s-occupied { opacity: 0.4; pointer-events: none !important; }
+    .s-seat .s-remove {
+      position: absolute; top: -4px; right: -4px; background: var(--danger); color: white;
+      width: 15px; height: 15px; border-radius: 50%; font-size: 9px; line-height: 15px;
+      display: none; cursor: pointer; text-align: center;
+    }
+    .s-seat.s-occupied:hover .s-remove { display: block; }
+    .s-btn {
+      padding: 8px 14px; border: none; border-radius: 8px; font-size: 13px;
+      font-weight: 700; cursor: pointer; color: white; transition: all 0.15s;
+    }
+    .s-btn:hover { transform: translateY(-1px); }
+
     @media (max-width: 900px) {
       .sidebar { width: 60px; min-width: 60px; }
       .sidebar .nav-item span, .sidebar-logo span, .sidebar-logo h1, .nav-label { display: none; }
@@ -291,6 +369,7 @@
       .nav-icon { margin: 0; }
       .content { padding: 20px 16px; }
       .overview-grid { grid-template-columns: 1fr; }
+      .seating-sidebar { display: none; }
     }
   </style>
 </head>
@@ -346,6 +425,9 @@
           </div>
           <div class="nav-item" onclick="switchPage('list')">
             <span class="nav-icon">📋</span><span>完整名單</span>
+          </div>
+          <div class="nav-item" onclick="switchPage('seating')">
+            <span class="nav-icon">💺</span><span>座位管理</span>
           </div>
         </div>
 
@@ -509,6 +591,39 @@
           </div>
         </div>
 
+        <!-- ====== 座位管理 ====== -->
+        <div id="page-seating" class="page">
+          <div class="page-title"><span class="icon">💺</span> 座位管理</div>
+          <div class="seating-layout">
+            <div class="seating-sidebar">
+              <div class="seating-sidebar-header">
+                <h3>未安排 (<span id="s-unassigned-count">0</span>)</h3>
+              </div>
+              <div class="seating-unassigned-list" id="s-unassigned-list" ondragover="sAllowDrop(event)" ondrop="sDropToUnassigned(event)"></div>
+            </div>
+            <div class="seating-content">
+              <div class="seating-toolbar">
+                <div style="display:flex; gap:8px;">
+                  <button class="s-btn" style="background:var(--success);" onclick="sSave()">💾 儲存座位表</button>
+                  <button class="s-btn" style="background:var(--danger);" onclick="sClearAll()">🗑 清空全部</button>
+                  <button class="s-btn" style="background:var(--text-sub);" onclick="sLoadData()">🔄 重新載入</button>
+                </div>
+              </div>
+              <div class="seating-settings">
+                <label>列數: <input type="number" id="s-row-count" value="10"></label>
+                <label>行數: <input type="number" id="s-col-count" value="20"></label>
+                <button class="s-btn" style="background:var(--primary);" onclick="sApplySize()">套用大小</button>
+                <div style="flex:1;"></div>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; color:var(--danger); background:rgba(239,68,68,0.1); padding:6px 12px; border-radius:8px; border:1px solid var(--danger);">
+                  <input type="checkbox" id="s-block-toggle" onchange="sToggleBlock()" style="width:16px;height:16px;margin:0;"> 🚧 設定走道
+                </label>
+              </div>
+              <div class="seating-stage">講台 / 舞台</div>
+              <div class="seating-grid" id="s-seat-grid"></div>
+            </div>
+          </div>
+        </div>
+
       </div><!-- .content -->
     </div><!-- .layout -->
   </div><!-- #main-dashboard -->
@@ -584,6 +699,7 @@
       document.getElementById('page-' + name).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       event.currentTarget.classList.add('active');
+      if (name === 'seating' && !sSeatingLoaded) { sLoadData(); }
     }
 
     // ===== 刷新所有 =====
@@ -1025,6 +1141,169 @@
           alert('清除失敗: ' + err);
         });
       }
+    }
+
+    // ================================================
+    // ===== 座位管理模組 (整合進 Admin Dashboard) =====
+    // ================================================
+    let sSeatingData = { seats: {}, unassigned: [] };
+    let sConfig = { rows: 10, cols: 20, blocked: [] };
+    let sIsBlockMode = false;
+    let sSeatingLoaded = false;
+    let sDragData = null;
+
+    function sLoadData() {
+      showLoading('載入座位資料...');
+      callAPI('getSeatingData', { pwd: currentPassword }, (res) => {
+        sSeatingData = { seats: res.seats || {}, unassigned: res.unassigned || [] };
+        sConfig = res.config || { rows: 10, cols: 20, blocked: [] };
+        if (!sConfig.blocked) sConfig.blocked = [];
+        document.getElementById('s-row-count').value = sConfig.rows;
+        document.getElementById('s-col-count').value = sConfig.cols;
+        sSeatingLoaded = true;
+        sRenderGrid();
+        sRenderUnassigned();
+        hideLoading();
+      }, (err) => {
+        hideLoading();
+        alert('載入座位資料失敗：' + err);
+      });
+    }
+
+    function sApplySize() {
+      sConfig.rows = parseInt(document.getElementById('s-row-count').value) || 10;
+      sConfig.cols = parseInt(document.getElementById('s-col-count').value) || 20;
+      sRenderGrid();
+    }
+
+    function sToggleBlock() {
+      sIsBlockMode = document.getElementById('s-block-toggle').checked;
+      const grid = document.getElementById('s-seat-grid');
+      if (sIsBlockMode) grid.classList.add('s-block-mode');
+      else grid.classList.remove('s-block-mode');
+    }
+
+    function sHandleClick(seatId) {
+      if (!sIsBlockMode) return;
+      const idx = sConfig.blocked.indexOf(seatId);
+      if (idx !== -1) { sConfig.blocked.splice(idx, 1); }
+      else {
+        if (sSeatingData.seats[seatId]) return;
+        sConfig.blocked.push(seatId);
+      }
+      sRenderGrid();
+    }
+
+    function sRenderGrid() {
+      const grid = document.getElementById('s-seat-grid');
+      grid.innerHTML = '';
+      grid.style.gridTemplateColumns = `repeat(${sConfig.cols}, minmax(42px, 1fr))`;
+      for (let r = 1; r <= sConfig.rows; r++) {
+        for (let c = 1; c <= sConfig.cols; c++) {
+          const sid = 'R' + r + '-C' + c;
+          const d = document.createElement('div');
+          d.className = 's-seat s-empty';
+          d.id = 's-' + sid;
+          d.title = '第 ' + r + ' 排，第 ' + c + ' 號';
+          d.onclick = function() { sHandleClick(sid); };
+          const blocked = sConfig.blocked.indexOf(sid) !== -1;
+          const occ = sSeatingData.seats[sid];
+          if (blocked) {
+            d.className = 's-seat s-blocked';
+          } else if (occ) {
+            d.className = 's-seat s-occupied';
+            d.innerHTML = '<span style="font-size:11px;">' + occ.name + '</span><div class="s-remove" onclick="sRemove(\'' + sid + '\', event)">x</div>';
+            d.draggable = true;
+            d.ondragstart = function(e) { sDragStart(e, sid, occ.uid, occ.name); };
+          } else {
+            d.ondragover = sAllowDrop;
+            d.ondrop = sDropToSeat;
+          }
+          grid.appendChild(d);
+        }
+      }
+    }
+
+    function sRenderUnassigned() {
+      const list = document.getElementById('s-unassigned-list');
+      list.innerHTML = '';
+      document.getElementById('s-unassigned-count').innerText = sSeatingData.unassigned.length;
+      sSeatingData.unassigned.forEach((u, i) => {
+        const item = document.createElement('div');
+        item.className = 'seating-user-item';
+        item.draggable = true;
+        item.innerText = u.name;
+        item.ondragstart = function(e) { sDragStart(e, 'unassigned', u.uid, u.name, i); };
+        list.appendChild(item);
+      });
+    }
+
+    function sDragStart(e, source, uid, name, index) {
+      sDragData = { source, uid, name, index };
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function sAllowDrop(e) {
+      e.preventDefault();
+      if (e.target.classList.contains('s-seat') && !e.target.classList.contains('s-occupied')) {
+        e.target.classList.add('s-dragover');
+      }
+    }
+    document.addEventListener('dragleave', function(e) {
+      if (e.target && e.target.classList && e.target.classList.contains('s-seat')) {
+        e.target.classList.remove('s-dragover');
+      }
+    });
+    function sDropToSeat(e) {
+      e.preventDefault();
+      let t = e.target;
+      while (t && !t.classList.contains('s-seat')) t = t.parentElement;
+      if (!t) return;
+      t.classList.remove('s-dragover');
+      if (t.classList.contains('s-occupied') || t.classList.contains('s-blocked')) return;
+      const targetId = t.id.replace('s-', '');
+      if (sDragData.source === 'unassigned') {
+        sSeatingData.seats[targetId] = { uid: sDragData.uid, name: sDragData.name };
+        sSeatingData.unassigned.splice(sDragData.index, 1);
+      } else {
+        sSeatingData.seats[targetId] = { uid: sDragData.uid, name: sDragData.name };
+        delete sSeatingData.seats[sDragData.source];
+      }
+      sRenderGrid(); sRenderUnassigned();
+    }
+    function sDropToUnassigned(e) {
+      e.preventDefault();
+      if (sDragData && sDragData.source !== 'unassigned') {
+        delete sSeatingData.seats[sDragData.source];
+        sSeatingData.unassigned.unshift({ uid: sDragData.uid, name: sDragData.name });
+        sRenderGrid(); sRenderUnassigned();
+      }
+    }
+    function sRemove(seatId, e) {
+      e.stopPropagation();
+      const occ = sSeatingData.seats[seatId];
+      if (occ) {
+        sSeatingData.unassigned.unshift({ uid: occ.uid, name: occ.name });
+        delete sSeatingData.seats[seatId];
+        sRenderGrid(); sRenderUnassigned();
+      }
+    }
+    function sClearAll() {
+      if (!confirm('確定清空所有已安排的座位？')) return;
+      for (let id in sSeatingData.seats) {
+        sSeatingData.unassigned.push(sSeatingData.seats[id]);
+      }
+      sSeatingData.seats = {};
+      sRenderGrid(); sRenderUnassigned();
+    }
+    function sSave() {
+      showLoading('儲存座位表中...');
+      callAPI('saveSeatingData', { pwd: currentPassword, payload: JSON.stringify({ seats: sSeatingData.seats, config: sConfig }) }, () => {
+        hideLoading();
+        alert('✅ 座位表已成功儲存！');
+      }, (err) => {
+        hideLoading();
+        alert('儲存失敗：' + err);
+      });
     }
 </script>
 
