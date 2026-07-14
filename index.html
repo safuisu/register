@@ -3781,7 +3781,7 @@
       checkTourAQuota();
 
       // ===== 報名截止前端檢查 (7/16 00:00) =====
-      var deadline = new Date('2026-07-16T00:00:00+08:00');
+      var deadline = new Date('2026-07-20T00:00:00+08:00');
       if (new Date() >= deadline) {
         // 1. 將報名表單區塊替換成截止訊息
         var formCard = document.querySelector('#register-view .form-container-card');
@@ -3790,7 +3790,7 @@
             '<div style="text-align:center;padding:60px 20px;">' +
               '<div style="font-size:70px;margin-bottom:20px;">🚫</div>' +
               '<h2 style="color:#dc2626;font-size:28px;margin-bottom:15px;font-weight:bold;">報名已截止</h2>' +
-              '<p style="color:#4b5563;font-size:17px;line-height:1.6;">感謝您的關注，本活動報名已於 7 月 15 日截止。<br>如有任何問題，請洽詢主辦單位。</p>' +
+              '<p style="color:#4b5563;font-size:17px;line-height:1.6;">感謝您的關注，本活動報名已於 7 月 19 日截止。<br>如有任何問題，請洽詢主辦單位。</p>' +
               '<div style="margin-top:30px;"><button class="btn btn-primary" style="padding:12px 30px;font-size:16px;" onclick="switchView(\'home\')">返回首頁</button></div>' +
             '</div>';
         }
@@ -3798,7 +3798,7 @@
         var homeBtns = document.querySelectorAll('#home-view button');
         homeBtns.forEach(function(btn) {
           if (btn.getAttribute('onclick') === "switchView('register')") {
-            btn.innerHTML = '報名已於 7/15 截止';
+            btn.innerHTML = '報名已於 7/19 截止';
             btn.disabled = true;
             btn.style.background = '#9ca3af';
             btn.style.borderColor = '#9ca3af';
@@ -4904,7 +4904,7 @@ const universities = [
     "國立高雄大學", "臺北市立大學", "東海大學", "輔仁大學", "東吳大學", "中原大學", "淡江大學", "逢甲大學", "靜宜大學", "長庚大學",
     "元智大學", "大葉大學", "華梵大學", "義守大學", "世新大學", "銘傳大學", "實踐大學",
     "高雄醫學大學", "南華大學", "真理大學", "大同大學", "慈濟大學", "臺北醫學大學", "中山醫學大學",
-    "長榮大學", "玄奘大學", "中信金融管理學院", "法鼓文理學院", "亞洲大學", "開南大學", "佛光大學", "康寧大學", "中國文化大學", "中國醫藥大學", "馬偕醫學大學", "基督教台灣浸會神學院", "臺北基督學院", "台灣神學研究學院", "一貫道崇德學院", "台灣基督長老教會南神神學院", "中華福音神學研究學院", "唯心聖教學院","福智佛教學院", "大學考試入學分發委員會", "大學招生委員會聯合會", "大學校院招收大陸地區學生聯合招生委員會", "大學術科考試委員會聯合會", "大學甄選入學委員會", "海外聯合招生委員會", "財團法人大學入學考試中心基金會大學入學考試中心", "教育部"
+    "長榮大學", "玄奘大學", "中信金融管理學院", "法鼓文理學院", "亞洲大學", "開南大學", "佛光大學", "康寧大學", "中國文化大學", "中國醫藥大學", "馬偕醫學大學", "中信金融管理學院", "基督教台灣浸會神學院", "臺北基督學院", "台灣神學研究學院", "一貫道崇德學院", "台灣基督長老教會南神神學院", "中華福音神學研究學院", "唯心聖教學院","福智佛教學院", "大學考試入學分發委員會", "大學招生委員會聯合會", "大學校院招收大陸地區學生聯合招生委員會", "大學術科考試委員會聯合會", "大學甄選入學委員會", "海外聯合招生委員會", "財團法人大學入學考試中心基金會大學入學考試中心", "教育部"
 ];
 
 let currentSchoolInputId = 'school';
