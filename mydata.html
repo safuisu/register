@@ -388,13 +388,15 @@
   var GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwb1O2nBCzYA-SWvICOUIR9RRcj3NMwlUNH3dd5_aJ72gYfdwFP16D_Dz_7q_QL-TVT/exec';
   var currentIdCard = '';
   document.addEventListener('DOMContentLoaded', function() {
-    checkTourAQuota();
-    
     var urlParams = new URLSearchParams(window.location.search);
     var uid = urlParams.get('uid');
     if (uid) {
       document.getElementById('lookupCard').style.display = 'none';
       doPreview(uid);
+      // 延遲呼叫查詢名額，避免與 doPreview 同時發出請求導致 Apps Script 阻擋或連線失敗
+      setTimeout(checkTourAQuota, 1500);
+    } else {
+      checkTourAQuota();
     }
 
     // ===== 修改截止前端檢查 (7/16 00:00) =====
