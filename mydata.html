@@ -433,7 +433,7 @@
     if (isGAS) {
       google.script.run.withSuccessHandler(onPreviewResult).withFailureHandler(function(e){onPreviewResult({success:false,message:e.message})}).previewMyData(uid);
     } else {
-      var url = GAS_WEB_APP_URL + '?callback=onPreviewCallback&action=previewMyData&uid=' + encodeURIComponent(uid);
+      var url = GAS_WEB_APP_URL + '?callback=onPreviewCallback&action=previewMyData&uid=' + encodeURIComponent(uid) + '&_t=' + new Date().getTime();
       window.onPreviewCallback = onPreviewResult;
       var s = document.createElement('script'); s.src = url; s.onerror = function() { onPreviewResult({success:false, message:'連線失敗'}) }; document.body.appendChild(s);
     }
@@ -517,7 +517,7 @@
     if (isGAS) {
       google.script.run.withSuccessHandler(onLookupResult).withFailureHandler(function(e){onLookupResult({success:false,message:e.message})}).lookupMyData(idCard, birthDate);
     } else {
-      var url = GAS_WEB_APP_URL + '?callback=onLookupCallback&action=lookupMyData&idCard=' + encodeURIComponent(idCard) + '&birthDate=' + encodeURIComponent(birthDate);
+      var url = GAS_WEB_APP_URL + '?callback=onLookupCallback&action=lookupMyData&idCard=' + encodeURIComponent(idCard) + '&birthDate=' + encodeURIComponent(birthDate) + '&_t=' + new Date().getTime();
       window.onLookupCallback = onLookupResult;
       var s = document.createElement('script'); s.src = url; s.onerror = function() { onLookupResult({success:false, message:'連線失敗'}) }; document.body.appendChild(s);
     }
@@ -672,7 +672,7 @@
     if (isGAS) {
       google.script.run.withSuccessHandler(onSaveResult).withFailureHandler(function(e){onSaveResult({success:false,message:e.message})}).updateMyData(currentIdCard, currentBirthDate, payload);
     } else {
-      var url = GAS_WEB_APP_URL + '?callback=onSaveCallback&action=updateMyData&idCard=' + encodeURIComponent(currentIdCard) + '&birthDate=' + encodeURIComponent(currentBirthDate) + '&payload=' + encodeURIComponent(JSON.stringify(payload));
+      var url = GAS_WEB_APP_URL + '?callback=onSaveCallback&action=updateMyData&idCard=' + encodeURIComponent(currentIdCard) + '&birthDate=' + encodeURIComponent(currentBirthDate) + '&payload=' + encodeURIComponent(JSON.stringify(payload)) + '&_t=' + new Date().getTime();
       window.onSaveCallback = onSaveResult;
       var s = document.createElement('script'); s.src = url; s.onerror = function(){onSaveResult({success:false,message:'連線失敗'})}; document.body.appendChild(s);
     }
