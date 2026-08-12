@@ -393,8 +393,7 @@
     if (uid) {
       document.getElementById('lookupCard').style.display = 'none';
       doPreview(uid);
-      // 延遲呼叫查詢名額，避免與 doPreview 同時發出請求導致 Apps Script 阻擋或連線失敗
-      setTimeout(checkTourAQuota, 1500);
+      checkTourAQuota(); // 取消延遲，現在後端夠穩可以同時發送
     } else {
       checkTourAQuota();
     }
