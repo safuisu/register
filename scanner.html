@@ -241,77 +241,55 @@
         }
 
         const btn = document.querySelector('.login-box button');
-        const ADMIN_PWD = "u1208AU4GJTJ4"; 
-        const cbName = 'jsonpLogin_' + Math.round(100000 * Math.random());
-        const requestUrl = GAS_WEB_APP_URL + "?action=getAllData&pwd=" + ADMIN_PWD + "&callback=" + cbName;
+        document.getElementById('loginError').style.display = 'none'; // 清除舊錯誤
 
-        // 【極速優化】如果手機已經有下載過名單 (快取)，瞬間進入系統，不讓工作人員等待！
-        let cachedData = localStorage.getItem('scannerDB_115'); // 加上 115 避免舊版干擾
+        // 【極速優化】如果手機已經有下載過名單 (快取)，瞬間進入系統！
+        let cachedData = localStorage.getItem('scannerDB_115');
         if (cachedData) {
             try {
                 localDB = JSON.parse(cachedData);
                 document.getElementById('loginOverlay').style.display = 'none';
                 initScanner(); // 0秒瞬間開啟相機
-                
-                // 背景默默幫他更新名單，確保有抓到其他台機器更新的「已報到」狀態
-                fetch(requestUrl, { method: "GET", mode: "cors" }).then(r=>r.text()).then(text=>{
-                    let jsonString = text.replace(cbName + "(", "").replace(/\)$/, "");
-                    let data = JSON.parse(jsonString);
-                    let newDB = {};
-                    data.forEach(p => {
-                        if (p['UID']) {
-                            newDB[p['UID']] = {
-                                name: p['姓名'] || "",
-                                unit: (p['服務單位'] || p['學校機關名稱'] || p['學校'] || ""),
-                                title: p['職稱'] || "",
-                                status: p['報到狀態'] || "未報到"
-                            };
-                        }
-                    });
-                    localDB = newDB;
-                    localStorage.setItem('scannerDB_115', JSON.stringify(localDB));
-                }).catch(e=>{});
-                
-                return; // 結束函數
+
+                // 背景默默更新最新狀態（不影響工作人員使用）
+                attemptDownload(null, 0, true);
+                return;
             } catch(e) {}
         }
 
-        // 如果沒有快取 (第一次打開)，才需要等待下載
-        btn.innerText = "首次下載名單中，請稍候...";
+        // 第一次使用，需要等待下載
+        btn.innerText = "下載名單中...";
         btn.disabled = true;
+        attemptDownload(btn, 0, false);
+    }
 
-        let timeoutId = setTimeout(() => {
-            btn.innerText = "登入掃描系統";
-            btn.disabled = false;
-            document.getElementById('loginError').style.display = 'block';
-            document.getElementById('loginError').innerText = '連線逾時，請檢查網路！';
-        }, 15000);
+    // 自動重試下載，不需要使用者手動按多次
+    function attemptDownload(btn, attempt, isBackground) {
+        const MAX_ATTEMPTS = 4;
+        const ADMIN_PWD = "u1208AU4GJTJ4";
+        const cbName = 'cb_' + Math.round(1000000 * Math.random());
+        const requestUrl = GAS_WEB_APP_URL + "?action=getAllData&pwd=" + ADMIN_PWD + "&callback=" + cbName;
 
-        fetch(requestUrl, { method: "GET", mode: "cors" })
-            .then(response => response.text())
+        if (btn && attempt > 0) {
+            btn.innerText = "重新連線中 (" + attempt + "/" + (MAX_ATTEMPTS-1) + ")...";
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 秒後放棄這次嘗試
+
+        fetch(requestUrl, { method: "GET", mode: "cors", signal: controller.signal })
+            .then(r => r.text())
             .then(text => {
                 clearTimeout(timeoutId);
-                // 手動解析 JSONP
                 let jsonString = text.replace(cbName + "(", "").replace(/\)$/, "");
-                let data;
-                try {
-                    data = JSON.parse(jsonString);
-                } catch(e) {
-                    throw new Error("回傳格式錯誤");
-                }
-                
-                if (data.error) {
-                    btn.innerText = "登入掃描系統";
-                    btn.disabled = false;
-                    document.getElementById('loginError').style.display = 'block';
-                    document.getElementById('loginError').innerText = '載入失敗：' + data.error;
-                    return;
-                }
-                
-                // 轉換為 Dictionary 方便 O(1) 極速查詢
+                let data = JSON.parse(jsonString);
+                if (data.error) throw new Error(data.error);
+
+                // 成功！建立本地 Dictionary
+                let newDB = {};
                 data.forEach(p => {
                     if (p['UID']) {
-                        localDB[p['UID']] = {
+                        newDB[p['UID']] = {
                             name: p['姓名'] || "",
                             unit: (p['服務單位'] || p['學校機關名稱'] || p['學校'] || ""),
                             title: p['職稱'] || "",
@@ -319,19 +297,32 @@
                         };
                     }
                 });
+                localDB = newDB;
+                localStorage.setItem('scannerDB_115', JSON.stringify(localDB)); // 存快取
 
-                // 儲存到手機本地快取，下次 0 秒登入！
-                localStorage.setItem('scannerDB_115', JSON.stringify(localDB));
-
-                document.getElementById('loginOverlay').style.display = 'none';
-                initScanner(); // 下載完成才開啟相機
+                if (!isBackground) {
+                    // 第一次登入，進入掃描系統
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    initScanner();
+                }
+                // 背景更新完成，不需要任何動作
             })
-            .catch(error => {
+            .catch(err => {
                 clearTimeout(timeoutId);
-                btn.innerText = "登入掃描系統";
-                btn.disabled = false;
-                document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').innerText = '網路斷線或被阻擋！';
+                if (isBackground) return; // 背景更新失敗無所謂，不打擾工作人員
+
+                if (attempt < MAX_ATTEMPTS - 1) {
+                    // 自動重試，不顯示錯誤，延遲 1 秒後再試
+                    setTimeout(() => attemptDownload(btn, attempt + 1, false), 1000);
+                } else {
+                    // 嘗試了 4 次都失敗，才顯示錯誤
+                    if (btn) {
+                        btn.innerText = "登入掃描系統";
+                        btn.disabled = false;
+                    }
+                    document.getElementById('loginError').style.display = 'block';
+                    document.getElementById('loginError').innerText = '網路連線失敗，請換個網路再試！';
+                }
             });
     }
 
