@@ -240,6 +240,7 @@
             return;
         }
 
+        const btn = document.querySelector('.login-box button');
         const ADMIN_PWD = "u1208AU4GJTJ4"; 
         const cbName = 'jsonpLogin_' + Math.round(100000 * Math.random());
         const requestUrl = GAS_WEB_APP_URL + "?action=getAllData&pwd=" + ADMIN_PWD + "&callback=" + cbName;
