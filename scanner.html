@@ -240,14 +240,44 @@
             return;
         }
 
-        // 登入成功，開始下載名單
-        const btn = document.querySelector('.login-box button');
-        btn.innerText = "下載名單中，請稍候...";
-        btn.disabled = true;
-
         const ADMIN_PWD = "u1208AU4GJTJ4"; 
         const cbName = 'jsonpLogin_' + Math.round(100000 * Math.random());
         const requestUrl = GAS_WEB_APP_URL + "?action=getAllData&pwd=" + ADMIN_PWD + "&callback=" + cbName;
+
+        // 【極速優化】如果手機已經有下載過名單 (快取)，瞬間進入系統，不讓工作人員等待！
+        let cachedData = localStorage.getItem('scannerDB_115'); // 加上 115 避免舊版干擾
+        if (cachedData) {
+            try {
+                localDB = JSON.parse(cachedData);
+                document.getElementById('loginOverlay').style.display = 'none';
+                initScanner(); // 0秒瞬間開啟相機
+                
+                // 背景默默幫他更新名單，確保有抓到其他台機器更新的「已報到」狀態
+                fetch(requestUrl, { method: "GET", mode: "cors" }).then(r=>r.text()).then(text=>{
+                    let jsonString = text.replace(cbName + "(", "").replace(/\)$/, "");
+                    let data = JSON.parse(jsonString);
+                    let newDB = {};
+                    data.forEach(p => {
+                        if (p['UID']) {
+                            newDB[p['UID']] = {
+                                name: p['姓名'] || "",
+                                unit: (p['服務單位'] || p['學校機關名稱'] || p['學校'] || ""),
+                                title: p['職稱'] || "",
+                                status: p['報到狀態'] || "未報到"
+                            };
+                        }
+                    });
+                    localDB = newDB;
+                    localStorage.setItem('scannerDB_115', JSON.stringify(localDB));
+                }).catch(e=>{});
+                
+                return; // 結束函數
+            } catch(e) {}
+        }
+
+        // 如果沒有快取 (第一次打開)，才需要等待下載
+        btn.innerText = "首次下載名單中，請稍候...";
+        btn.disabled = true;
 
         let timeoutId = setTimeout(() => {
             btn.innerText = "登入掃描系統";
@@ -288,6 +318,9 @@
                         };
                     }
                 });
+
+                // 儲存到手機本地快取，下次 0 秒登入！
+                localStorage.setItem('scannerDB_115', JSON.stringify(localDB));
 
                 document.getElementById('loginOverlay').style.display = 'none';
                 initScanner(); // 下載完成才開啟相機
