@@ -329,45 +329,22 @@
 
     function fetchUncheckedIn() {
       const manualList = document.getElementById('manualList');
-      const schoolFilter = document.getElementById('schoolFilter');
-      manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: #9CA3AF;">正在向伺服器取得名單...</div>';
       document.getElementById('schoolFilterBtn').textContent = "載入中..."; currentSelectedSchool = "";
 
-      const callbackName = 'jsonpCallback_' + Math.round(100000 * Math.random());
+      // 直接從登入時載入的 localDB 取出未報到名單，瞬間完成！
+      uncheckedAttendees = [];
+      for (let uid in localDB) {
+          if (localDB[uid].status !== "已報到") {
+              uncheckedAttendees.push({
+                  uid: uid,
+                  name: localDB[uid].name,
+                  school: localDB[uid].unit
+              });
+          }
+      }
       
-      let timeoutId = setTimeout(() => {
-        if (window[callbackName]) {
-          alert('讀取逾時！請確認 Apps Script 是否已正確「重新部署」，或是網址是否有誤。');
-          manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--error);">讀取失敗 (逾時/未部署)</div>';
-          document.getElementById('schoolFilterBtn').textContent = "讀取失敗";
-          delete window[callbackName];
-        }
-      }, 10000);
-
-      window[callbackName] = function(data) {
-        clearTimeout(timeoutId);
-        delete window[callbackName];
-        if (data.error) {
-          alert('讀取失敗：' + data.error);
-          manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--error);">讀取失敗</div>';
-          document.getElementById('schoolFilterBtn').textContent = "讀取失敗";
-          return;
-        }
-        uncheckedAttendees = data;
-        populateSchoolFilter();
-        renderManualList();
-      };
-
-      const script = document.createElement('script');
-      script.src = GAS_WEB_APP_URL + '?action=getUncheckedIn&callback=' + callbackName;
-      script.onerror = function() {
-        clearTimeout(timeoutId);
-        delete window[callbackName];
-        alert('網路連線錯誤，或 Apps Script 尚未重新部署。');
-        manualList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--error);">連線失敗</div>';
-        document.getElementById('schoolFilterBtn').textContent = "讀取失敗";
-      };
-      document.head.appendChild(script);
+      populateSchoolFilter();
+      renderManualList();
     }
 
     
