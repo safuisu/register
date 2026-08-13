@@ -245,56 +245,60 @@
         btn.innerText = "下載名單中，請稍候...";
         btn.disabled = true;
 
-        const ADMIN_PWD = "u1208AU4GJTJ4"; // 內部呼叫 API 的密碼
+        const ADMIN_PWD = "u1208AU4GJTJ4"; 
         const cbName = 'jsonpLogin_' + Math.round(100000 * Math.random());
-        const script = document.createElement('script');
-        script.src = GAS_WEB_APP_URL + "?action=getAllData&pwd=" + ADMIN_PWD + "&callback=" + cbName;
+        const requestUrl = GAS_WEB_APP_URL + "?action=getAllData&pwd=" + ADMIN_PWD + "&callback=" + cbName;
 
         let timeoutId = setTimeout(() => {
-            delete window[cbName];
             btn.innerText = "登入掃描系統";
             btn.disabled = false;
             document.getElementById('loginError').style.display = 'block';
             document.getElementById('loginError').innerText = '連線逾時，請檢查網路！';
         }, 15000);
 
-        window[cbName] = function(data) {
-            clearTimeout(timeoutId);
-            delete window[cbName];
-            if (data.error) {
+        fetch(requestUrl, { method: "GET", mode: "cors" })
+            .then(response => response.text())
+            .then(text => {
+                clearTimeout(timeoutId);
+                // 手動解析 JSONP
+                let jsonString = text.replace(cbName + "(", "").replace(/\)$/, "");
+                let data;
+                try {
+                    data = JSON.parse(jsonString);
+                } catch(e) {
+                    throw new Error("回傳格式錯誤");
+                }
+                
+                if (data.error) {
+                    btn.innerText = "登入掃描系統";
+                    btn.disabled = false;
+                    document.getElementById('loginError').style.display = 'block';
+                    document.getElementById('loginError').innerText = '載入失敗：' + data.error;
+                    return;
+                }
+                
+                // 轉換為 Dictionary 方便 O(1) 極速查詢
+                data.forEach(p => {
+                    if (p['UID']) {
+                        localDB[p['UID']] = {
+                            name: p['姓名'] || "",
+                            unit: (p['服務單位'] || p['學校機關名稱'] || p['學校'] || ""),
+                            title: p['職稱'] || "",
+                            status: p['報到狀態'] || "未報到"
+                        };
+                    }
+                });
+
+                document.getElementById('loginOverlay').style.display = 'none';
+                initScanner(); // 下載完成才開啟相機
+            })
+            .catch(error => {
+                clearTimeout(timeoutId);
                 btn.innerText = "登入掃描系統";
                 btn.disabled = false;
                 document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').innerText = '載入失敗：' + data.error;
-                return;
-            }
-            
-            // 轉換為 Dictionary 方便 O(1) 極速查詢
-            data.forEach(p => {
-                if (p['UID']) {
-                    localDB[p['UID']] = {
-                        name: p['姓名'] || "",
-                        unit: (p['服務單位'] || p['學校機關名稱'] || p['學校'] || ""),
-                        title: p['職稱'] || "",
-                        status: p['報到狀態'] || "未報到"
-                    };
-                }
+                document.getElementById('loginError').innerText = '網路斷線或被阻擋！';
             });
-
-            document.getElementById('loginOverlay').style.display = 'none';
-            initScanner(); // 下載完成才開啟相機
-        };
-
-        script.onerror = function() {
-            clearTimeout(timeoutId);
-            delete window[cbName];
-            btn.innerText = "登入掃描系統";
-            btn.disabled = false;
-            document.getElementById('loginError').style.display = 'block';
-            document.getElementById('loginError').innerText = '網路斷線！';
-        };
-
-        document.body.appendChild(script);
     }
 
     // 支援按 Enter 登入
@@ -633,26 +637,18 @@
 
     // --- 背景寫入 Google 試算表 ---
     function syncCheckInToGoogle(uid) {
-        // 使用 dummy callback，因為我們不依賴它的回傳值來更新畫面
         let cbName = 'jsonpSync_' + Math.round(100000 * Math.random());
         let requestUrl = GAS_WEB_APP_URL + "?action=toggleCheckIn&status=已報到&uid=" + encodeURIComponent(uid) + "&pwd=u1208AU4GJTJ4&callback=" + cbName;
         
-        // 為了避免背景累積過多 pending 的 fetch 拖慢手機，這裡直接用標準 JSONP <script> 注入
-        const script = document.createElement('script');
-        script.src = requestUrl;
-        
-        window[cbName] = function(data) {
-            delete window[cbName];
-            try { document.body.removeChild(script); } catch(e){}
-            // 如果背景寫入成功，我們什麼都不用做，因為前端已經顯示成功了
-            // 如果真的寫入失敗，本地快取依然是"已報到"，所以不會卡住動線
-        };
-        script.onerror = function() {
-            delete window[cbName];
-            try { document.body.removeChild(script); } catch(e){}
-            console.error("背景連線異常，報到資料可能未成功上傳，但本地已記錄。");
-        };
-        document.body.appendChild(script);
+        // 改用 fetch 突破 Safari 阻擋跨網域 <script> 的限制
+        fetch(requestUrl, { method: "GET", mode: "cors" })
+            .then(res => res.text())
+            .then(text => {
+                console.log("背景上傳成功:", uid);
+            })
+            .catch(err => {
+                console.error("背景連線異常，報到資料可能未成功上傳，但本地已記錄。");
+            });
     }
 
     function closeOverlay() {
