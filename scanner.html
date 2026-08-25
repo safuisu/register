@@ -640,7 +640,7 @@
     // --- 背景寫入 Google 試算表 ---
     function syncCheckInToGoogle(uid) {
         let cbName = 'jsonpSync_' + Math.round(100000 * Math.random());
-        let requestUrl = GAS_WEB_APP_URL + "?action=toggleCheckIn&status=已報到&uid=" + encodeURIComponent(uid) + "&pwd=u1208AU4GJTJ4&callback=" + cbName;
+        let requestUrl = GAS_WEB_APP_URL + "?action=toggleCheckIn&status=已報到&uid=" + encodeURIComponent(uid) + "&pwd=u1208AU4GJTJ&callback=" + cbName;
         
         // 改用 fetch 突破 Safari 阻擋跨網域 <script> 的限制
         fetch(requestUrl, { method: "GET", mode: "cors" })
