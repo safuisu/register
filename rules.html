@@ -1,0 +1,472 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>競賽規程 - 115年度大專校院教職員工桌球聯誼賽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue-deep:#0c4a6e;
+  --blue-main:#0284c7;
+  --blue-mid:#0ea5e9;
+  --blue-pale:#e0f2fe;
+  --blue-light:#38bdf8;
+  --gray-50:#f8fafc;
+  --gray-100:#f1f5f9;
+  --gray-200:#e2e8f0;
+  --gray-400:#94a3b8;
+  --gray-500:#64748b;
+  --gray-600:#475569;
+  --gray-800:#0f172a;
+  --white:#fff;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.1);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.08);
+  --radius:12px;
+}
+body{
+  font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  background:var(--gray-100);
+  color:var(--gray-800);
+  line-height:1.8;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* TOP BAR */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-inner {
+  max-width: 1200px; margin: 0 auto;
+  height: 70px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+}
+.back-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--gray-600); text-decoration: none; font-weight: 700; font-size: 15px;
+  transition: color .2s;
+}
+.back-btn:hover { color: var(--blue-main); }
+.topbar-title {
+  font-size: 15px; font-weight: 800; color: var(--blue-deep);
+}
+.topbar-actions { display: flex; gap: 12px; align-items: center; }
+.print-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; background: var(--blue-pale); color: var(--blue-main);
+  border: none; border-radius: 8px; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: all .2s;
+}
+.print-btn:hover { background: #bae6fd; }
+.download-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; background: var(--blue-main); color: var(--white);
+  text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px;
+  transition: all .2s; box-shadow: var(--shadow-sm);
+}
+.download-btn:hover { background: var(--blue-deep); }
+
+/* LAYOUT */
+.layout {
+  max-width: 1200px; margin: 40px auto;
+  display: flex; gap: 40px; padding: 0 24px; align-items: flex-start;
+}
+
+/* TOC (Table of Contents) */
+.toc-wrapper {
+  flex: 0 0 240px;
+  position: sticky; top: 110px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+.toc-title {
+  font-size: 12px; font-weight: 800; color: var(--gray-400);
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;
+}
+.toc-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.toc-link {
+  display: block; color: var(--gray-500); text-decoration: none; font-size: 14px;
+  font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all .2s;
+  border-left: 2px solid transparent;
+}
+.toc-link:hover { color: var(--blue-main); background: var(--white); }
+.toc-link.active {
+  color: var(--blue-main); font-weight: 800;
+  border-left-color: var(--blue-main); background: var(--blue-pale);
+}
+
+/* DOCUMENT CONTENT */
+.doc-wrapper {
+  flex: 1; background: var(--white);
+  padding: 60px 80px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+.doc-header { text-align: center; margin-bottom: 50px; border-bottom: 2px solid var(--gray-200); padding-bottom: 40px; }
+.doc-eyebrow {
+  font-size: 14px; font-weight: 800; color: var(--blue-main);
+  letter-spacing: 0.1em; margin-bottom: 12px;
+}
+.doc-title {
+  font-size: 32px; font-weight: 900; color: var(--blue-deep); line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+/* DOCUMENT SECTIONS */
+.section-block { margin-bottom: 48px; scroll-margin-top: 100px; }
+.section-title {
+  font-size: 22px; font-weight: 800; color: var(--blue-deep);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+}
+.section-title-num {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--blue-main); font-size: 24px;
+}
+.section-content { font-size: 16px; color: var(--gray-600); }
+.section-content p { margin-bottom: 12px; }
+.section-content ul, .section-content ol { padding-left: 24px; margin-bottom: 16px; }
+.section-content li { margin-bottom: 8px; }
+.section-content li::marker { color: var(--blue-main); font-weight: 800; }
+.section-content strong { color: var(--gray-800); }
+.table-like {
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: 8px; padding: 20px; margin: 16px 0;
+}
+.table-like-title { font-weight: 800; color: var(--gray-800); margin-bottom: 8px; }
+
+/* DOWNLOAD CARD */
+.download-card {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--blue-pale); border-radius: 10px; padding: 18px 24px;
+  margin-top: 24px; margin-bottom: 24px; border: 1px dashed var(--blue-mid);
+}
+.dl-icon { font-size: 32px; }
+.dl-text { flex: 1; }
+.dl-title { font-size: 16px; font-weight: 800; color: var(--blue-deep); margin-bottom: 4px; }
+.dl-desc { font-size: 14px; color: var(--blue-deep); opacity: 0.8; line-height: 1.4; }
+.dl-button {
+  background: var(--white); color: var(--blue-main); font-weight: 800; font-size: 15px;
+  padding: 10px 24px; border-radius: 8px; text-decoration: none;
+  box-shadow: var(--shadow-sm); transition: all .2s; white-space: nowrap;
+}
+.dl-button:hover { background: var(--blue-main); color: var(--white); box-shadow: var(--shadow-md); }
+
+/* RESPONSIVE */
+@media(max-width: 960px) {
+  .layout { flex-direction: column; }
+  .toc-wrapper { display: none; }
+  .doc-wrapper { padding: 40px 32px; width: 100%; }
+}
+@media(max-width: 640px) {
+  .doc-wrapper { padding: 30px 20px; box-shadow: none; border-radius: 0; }
+  .layout { padding: 0; margin: 0; }
+  .doc-title { font-size: 24px; }
+  .topbar-title { display: none; }
+  .download-card { flex-direction: column; text-align: center; }
+  .dl-button { width: 100%; }
+}
+
+/* PRINT CSS */
+@media print {
+  body { background: #fff; color: #000; font-size: 12pt; line-height: 1.5; }
+  .topbar, .toc-wrapper, .print-btn, .download-btn, .download-card { display: none !important; }
+  .layout { margin: 0; padding: 0; display: block; max-width: 100%; }
+  .doc-wrapper {
+    box-shadow: none; padding: 0; border: none; margin: 0;
+    max-width: 100%; width: 100%;
+  }
+  .doc-header { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ccc; }
+  .doc-title { font-size: 24pt; color: #000; }
+  .section-block { margin-bottom: 24px; page-break-inside: avoid; }
+  .section-title { font-size: 16pt; color: #000; margin-bottom: 12px; }
+  .section-title-num { color: #000; }
+  .section-content { color: #000; font-size: 11pt; }
+  .section-content strong { color: #000; }
+  .table-like { border: 1px solid #ccc; background: transparent; padding: 12px; page-break-inside: avoid; }
+  a { text-decoration: none; color: #000; }
+  @page { margin: 2cm; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="back-btn">&larr; 回活動首頁</a>
+    <div class="topbar-title">115年度大專教職員工桌球聯誼賽</div>
+    <div class="topbar-actions">
+      <!-- 若報名表檔名不同，請更改 href 屬性 -->
+      <a href="r001.docx" class="download-btn" download>&#128229; 下載報名表</a>
+      <button class="print-btn" onclick="window.print()">&#128424; 列印規程</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  
+  <!-- TOC (DESKTOP) -->
+  <aside class="toc-wrapper">
+    <div class="toc-title">規程目錄</div>
+    <ul class="toc-list" id="toc-list">
+      <li><a href="#sec-1" class="toc-link">一、 宗旨</a></li>
+      <li><a href="#sec-2" class="toc-link">二、 組織</a></li>
+      <li><a href="#sec-3" class="toc-link">三、 日期與地點</a></li>
+      <li><a href="#sec-4" class="toc-link">四、 參賽資格與單位</a></li>
+      <li><a href="#sec-5" class="toc-link">五、 比賽分組與項目</a></li>
+      <li><a href="#sec-6" class="toc-link">六、 報名辦法</a></li>
+      <li><a href="#sec-7" class="toc-link">七、 領隊會議與抽籤</a></li>
+      <li><a href="#sec-8" class="toc-link">八、 比賽制度</a></li>
+      <li><a href="#sec-9" class="toc-link">九、 規則與用球</a></li>
+      <li><a href="#sec-10" class="toc-link">十、 出賽規定</a></li>
+      <li><a href="#sec-11" class="toc-link">十一、 獎勵辦法</a></li>
+      <li><a href="#sec-12" class="toc-link">十二、 申訴</a></li>
+      <li><a href="#sec-13" class="toc-link">十三、 附則</a></li>
+    </ul>
+  </aside>
+
+  <!-- DOCUMENT -->
+  <main class="doc-wrapper">
+    <div class="doc-header">
+      <div class="doc-eyebrow">OFFICIAL REGULATIONS</div>
+      <h1 class="doc-title">中華民國大專校院115年度<br>教職員工桌球聯誼賽 競賽規程</h1>
+    </div>
+
+    <!-- 1 -->
+    <section id="sec-1" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">01</span> 一、宗旨</h2>
+      <div class="section-content">
+        <p>為倡導全民體育，透過全國大專校院教職員工共同參賽，促進跨校交流、增進情誼，並藉此切磋精湛球技，養成規律運動習慣，特舉辦本賽事。</p>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section id="sec-2" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">02</span> 二、組織</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>指導單位：</strong>運動部全民運動署</li>
+          <li><strong>主辦單位：</strong>中華民國大專院校體育總會</li>
+          <li><strong>主辦學校：</strong>義守大學</li>
+          <li><strong>協辦單位：</strong>高雄市政府運動發展局、義守大學體育室</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section id="sec-3" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">03</span> 三、比賽日期及地點</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>比賽日期：</strong>中華民國 115 年 11 月 14 日（星期六）至 11 月 16 日（星期一），共計三天。</li>
+          <li><strong>比賽地點：</strong>義守大學校本部體育館（高雄市大樹區學城路一段1號）。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section id="sec-4" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">04</span> 四、參賽資格與單位</h2>
+      <div class="section-content">
+        <p>以全國各大專校院為單位，凡屬編制內之教職員工（含正式退休人員），均可代表其所屬學校報名參賽。詳細身分認定依各組別規定為主。</p>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="sec-5" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">05</span> 五、比賽分組與項目</h2>
+      <div class="section-content">
+        <div class="table-like">
+          <div class="table-like-title">（一）個人賽</div>
+          <ol>
+            <li><strong>邀請首長組單打：</strong>教育部、運動部、大專體總及各地方政府教育/體育局處正副首長。</li>
+            <li><strong>學校首長組單打：</strong>各大專校院之現任校長（首長組）；現任副校長、一級主管（一級主管組）。</li>
+            <li><strong>長青組單打：</strong>限年滿55歲（含）以上之退休人員參加，且未在其他學校專任。（每單位限報10名）</li>
+            <li><strong>長青組雙打：</strong>限退休人員參加，不限年齡但限同單位。（每單位限報5組）</li>
+            <li><strong>一級主管組雙打：</strong>現任校長、副校長及一級單位主管可自由搭檔報名。（需附證明）</li>
+            <li><strong>公開組單打：</strong>不分男女，在職與退休人員均可參加。</li>
+          </ol>
+        </div>
+        <div class="table-like">
+          <div class="table-like-title">（二）團體賽</div>
+          <ol>
+            <li><strong>長青組：</strong>限退休人員。採4人5分制（單、單、雙、單、單），單雙可兼。</li>
+            <li><strong>男甲組：</strong>採7人5分制（單、雙、單、雙、單），單雙不可兼。114年男甲前2名與男乙前3名必參賽。</li>
+            <li><strong>男乙組：</strong>採7人5分制，單雙不可兼。114年男丙前2名與未升甲組單位應參賽。</li>
+            <li><strong>男丙組：</strong>採7人5分制，單雙不可兼。限新參加單位或未獲丙組前二名單位。</li>
+            <li><strong>女子組：</strong>採6人5分制（單、單、雙、單、單），單雙不可兼。各校女子組合併比賽。</li>
+            <li><strong>邀請組：</strong>受邀單位男女可混合自行組隊。</li>
+          </ol>
+        </div>
+        <p><strong>※ 附註：</strong>團體賽各組每單位限報2隊（邀請組限1隊）。男子隊人數不足時，得以女隊員補充，最多3名；女子隊不足時，不得以男隊員補充。每人報名團體賽最多參加一組，個人賽則不在此限。</p>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="sec-6" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">06</span> 六、報名辦法</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>報名期限：</strong>即日起至 115年10月28日（三）截止，以郵戳為憑，逾期恕不受理。</li>
+          <li><strong>報名費用：</strong>
+            <ul>
+              <li>個人賽：每組新臺幣 500 元整。</li>
+              <li>團體賽：每隊新臺幣 5,000 元整。（邀請組免繳報名費）</li>
+            </ul>
+          </li>
+          <li><strong>繳費方式：</strong>請至郵局購買匯票，匯票抬頭註明「<strong>義守大學</strong>」，並以鉛筆在匯票空白處註記學校名稱以利核對（恕不收現金）。</li>
+          <li><strong>郵寄地址：</strong>請將「報名表紙本」與「匯票」以掛號郵寄至：<br>【84001】高雄市大樹區學城路一段1號 義守大學體育室 蔡長曜 收。</li>
+        </ul>
+        
+        <!-- DOWNLOAD CARD -->
+        <div class="download-card">
+           <div class="dl-icon">&#128196;</div>
+           <div class="dl-text">
+             <div class="dl-title">大會專用報名表下載</div>
+             <div class="dl-desc">請下載此檔案填寫名單，並連同匯票掛號寄至大會。</div>
+           </div>
+           <!-- 若報名表檔名不同，請更改 href 屬性 -->
+           <a href="r001.docx" class="dl-button" download>點此下載檔案</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="sec-7" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">07</span> 七、領隊會議與抽籤</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>比賽抽籤：</strong>115年11月03日（二）下午 15:00 於義守大學體育室（體育館二樓）舉行，敬請各單位派員出席，大會不另函通知。缺席者由大會代抽，不得異議。</li>
+          <li><strong>賽程公告：</strong>115年11月06日（五）統一於大專體總官網公告。</li>
+          <li><strong>領隊會議：</strong>115年11月14日（六）上午 08:20 於義守大學學生活動中心四樓課外活動組舉行。（時間地點如有變動將另行公告）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section id="sec-8" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">08</span> 八、比賽制度</h2>
+      <div class="section-content">
+        <p>所有賽事包含預賽及決賽之賽制，規定如下：</p>
+        <ol>
+          <li>個人賽及團體賽均採<strong>分組循環後，再進行單敗淘汰賽制</strong>。</li>
+          <li>預賽階段，5點須全部賽完，各點勝負皆列入名次積分考量。決賽階段則採「先勝3點為勝」。</li>
+          <li>各點比賽皆採<strong> 5局3勝制</strong>，每局11分。</li>
+          <li><strong>循環賽計分法：</strong>
+            <ul>
+              <li>勝1場得2分，敗1場得1分，未出賽或棄權得0分。</li>
+              <li>積分相等時之判定順序：(1) 兩隊相同時以該對戰之勝隊獲勝；(2) 三隊以上積分相同時，依序比較「勝負點比率」、「勝負局比率」、「勝負分比率」，商數大者獲勝；(3) 若再相同則由裁判長抽籤決定。</li>
+            </ul>
+          </li>
+          <li>各組若僅報名1隊不舉行比賽；報名2隊則採「3戰2勝制」；5隊(含)以下採單循環制；6隊以上則進行分組預賽。</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section id="sec-9" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">09</span> 九、比賽規則與用球</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>比賽規則：</strong>採用中華民國桌球協會修訂發布之最新桌球比賽規則。</li>
+          <li><strong>比賽用球：</strong>採用 40＋ 三星級正式比賽用球。</li>
+          <li><strong>比賽球桌：</strong>使用 SUNFLEX PIONEER 桌球檯或同等級國際標準比賽球檯。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section id="sec-10" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">10</span> 十、出賽規定</h2>
+      <div class="section-content">
+        <ul>
+          <li>各球隊請於賽前30分鐘向大會競賽組領取「出賽名單表」，並於賽前15分鐘填妥提交。</li>
+          <li>比賽時間以大會播報為準。超過比賽時間10分鐘未能出場者，該點（或該場）以棄權論。</li>
+          <li><strong>服裝規定：</strong>選手上衣、短褲或短裙之主體顏色，必須明顯與所使用比賽球的顏色不同（領子及袖子除外）。</li>
+          <li><strong>證件查驗：</strong>所有參賽球員出賽時，必須攜帶<strong>服務證明正本</strong>（或足資證明退休之文件）。當場若遭對手抗議且未能提出證明者，取消其該場比賽資格。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section id="sec-11" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">11</span> 十一、獎勵辦法</h2>
+      <div class="section-content">
+        <p>為鼓勵參賽隊伍，各組優勝單位及個人將獲頒以下獎勵：</p>
+        <ul>
+          <li>個人賽前幾名頒發<strong>獎牌乙面</strong>；團體賽頒發<strong>獎盃乙座</strong>。</li>
+          <li>錄取名額依各組報名隊(人)數決定：
+            <br>2∼3隊取1名；4隊取2名；5隊取3名；6隊取4名；7隊取5名；8隊取6名；9隊取7名；10隊(含)以上取8名。
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section id="sec-12" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">12</span> 十二、申訴</h2>
+      <div class="section-content">
+        <ul>
+          <li>有關運動員資格之申訴，應於比賽開始前提出；其他事件之申訴，應在比賽結束後<strong>一小時內</strong>提出。</li>
+          <li>申訴必須以書面形式提出，由領隊或教練簽名蓋章，並繳交保證金<strong>新臺幣伍仟元整</strong>。</li>
+          <li>申訴經大會審判委員會裁定成立時，退還保證金；若裁定不成立，則沒收保證金充作大會基金。審判委員會之判決為最終決議，不得再行異議。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section id="sec-13" class="section-block">
+      <h2 class="section-title"><span class="section-title-num">13</span> 十三、附則</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>保險事項：</strong>大會於活動期間有為賽事投保公共意外責任險。參賽選手如因個人健康因素或有其他保障需求，請各所屬單位或個人自行投保人身意外險。</li>
+          <li>為響應環保，會場不提供紙杯，請各參賽人員自行攜帶環保杯。</li>
+          <li>本規程如有未盡事宜，得由主辦單位修正後於官網公佈實施之。</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// TOC Highlight script
+document.addEventListener('DOMContentLoaded', () => {
+  const sections = document.querySelectorAll('.section-block');
+  const navLinks = document.querySelectorAll('.toc-link');
+  
+  const observer = new IntersectionObserver((entries) => {
+    let currentId = '';
+    entries.forEach(entry => {
+      // 只要有碰到視窗上方或正在畫面中，就標記它
+      if (entry.isIntersecting) {
+        currentId = entry.target.getAttribute('id');
+      }
+    });
+    
+    if (currentId) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentId) {
+          link.classList.add('active');
+        }
+      });
+    }
+  }, {
+    rootMargin: '-15% 0px -60% 0px',
+    threshold: 0
+  });
+
+  sections.forEach(section => observer.observe(section));
+});
+</script>
+</body>
+</html>
